@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HiLife Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div id="login-screen" class="page">
+      <div class="left-panel">
+        <div class="left-content">
+          <div class="logo">
+            <span class="logo-text"
+              >HILIFE<span class="logo-ai">.AI</span></span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="right-panel">
+        <div class="mobile-header">
+          <span class="logo-text">HILIFE<span class="logo-ai">.AI</span></span>
+        </div>
+        <div class="form-box">
+          <div class="tabs">
+            <button
+              id="tab-signin"
+              class="tab active"
+              onclick="switchLoginTab('signin')"
+            >
+              Sign In
+            </button>
+            <button
+              id="tab-signup"
+              class="tab"
+              onclick="switchLoginTab('signup')"
+            >
+              Sign Up
+            </button>
+          </div>
+          <div id="panel-signin" class="panel active">
+            <form id="signin-form" onsubmit="handleSignIn(event)">
+              <div class="field">
+                <label>Username</label>
+                <input
+                  type="text"
+                  id="signin-username"
+                  placeholder="Enter your username"
+                />
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <div class="pw-wrap">
+                  <input
+                    type="password"
+                    id="signin-password"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    class="eye-btn"
+                    onclick="togglePassword('signin-password', this)"
+                  >
+                    Show
+                  </button>
+                </div>
+              </div>
+              <div class="row-between">
+                <label class="check-label">
+                  <input type="checkbox" id="signin-remember" /> Remember me
+                </label>
+                <button
+                  type="button"
+                  class="text-link"
+                  onclick="forgotPassword()"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              <button type="submit" id="signin-btn" class="btn-primary">
+                Sign In
+              </button>
+              <p class="switch-text">
+                No account?
+                <button
+                  type="button"
+                  class="text-link bold"
+                  onclick="switchLoginTab('signup')"
+                >
+                  Sign Up
+                </button>
+              </p>
+            </form>
+          </div>
+          <div id="panel-signup" class="panel">
+            <form id="signup-form" onsubmit="handleSignUp(event)">
+              <div class="field-row">
+                <div class="field">
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    id="signup-firstname"
+                    placeholder="First name"
+                  />
+                </div>
+                <div class="field">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    id="signup-lastname"
+                    placeholder="Last name"
+                  />
+                </div>
+              </div>
+              <div class="field">
+                <label>Username</label>
+                <input
+                  type="text"
+                  id="signup-username"
+                  placeholder="Choose a username"
+                />
+              </div>
+              <div class="field">
+                <label>Email</label>
+                <input
+                  type="email"
+                  id="signup-email"
+                  placeholder="you@email.com"
+                />
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <div class="pw-wrap">
+                  <input
+                    type="password"
+                    id="signup-password"
+                    placeholder="Create a password"
+                  />
+                  <button
+                    type="button"
+                    class="eye-btn"
+                    onclick="togglePassword('signup-password', this)"
+                  >
+                    Show
+                  </button>
+                </div>
+              </div>
+              <div class="field">
+                <label>Confirm Password</label>
+                <div class="pw-wrap">
+                  <input
+                    type="password"
+                    id="signup-confirm"
+                    placeholder="Re-enter your password"
+                  />
+                  <button
+                    type="button"
+                    class="eye-btn"
+                    onclick="togglePassword('signup-confirm', this)"
+                  >
+                    Show
+                  </button>
+                </div>
+              </div>
+              <button type="submit" id="signup-btn" class="btn-primary">
+                Create Account
+              </button>
+              <p class="switch-text">
+                Have an account?
+                <button
+                  type="button"
+                  class="text-link bold"
+                  onclick="switchLoginTab('signin')"
+                >
+                  Sign In
+                </button>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="greeting-overlay" class="overlay" hidden>
+      <div class="modal">
+        <p class="modal-greeting">Welcome back,</p>
+        <h2 class="modal-name" id="greeting-name">User!</h2>
+        <p class="modal-sub">You are signed in to <strong>HILIFE.AI</strong></p>
+        <p class="modal-time" id="greeting-time"></p>
+        <p class="clock-status" id="clock-status"></p>
+        <button
+          id="clock-toggle-btn"
+          class="btn-primary"
+          onclick="handleClockToggle()"
+        ></button>
+        <button
+          class="btn-secondary"
+          style="margin-top: 16px"
+          onclick="closeGreeting()"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    </div>
+    <div id="dashboard-screen" class="hidden">
+      <header class="navbar">
+        <div class="nav-container">
+          <div class="logo">
+            <span class="logo-text"
+              >HILIFE<span class="logo-ai">.AI</span></span
+            >
+          </div>
+          <div class="nav-tabs">
+            <button
+              id="tab-btn-directory"
+              class="nav-tab-btn active"
+              onclick="switchDashboardTab('directory')"
+            >
+              Directory
+            </button>
+            <button
+              id="tab-btn-timer"
+              class="nav-tab-btn"
+              onclick="switchDashboardTab('timer')"
+            >
+              Work Timer
+            </button>
+          </div>
+          <div class="user-menu">
+            <span id="user-greeting">Hello, User</span>
+            <span id="header-clock-status" class="status-indicator">Out</span>
+            <button
+              id="header-clock-btn"
+              class="header-btn"
+              onclick="handleHeaderClockToggle()"
+            >
+              Clock In
+            </button>
+            <button class="header-btn signout-btn" onclick="handleSignOut()">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+      <main class="dashboard-content">
+        <section id="directory-tab" class="tab-content-panel active">
+          <div class="section-header-title">
+            <h2>Employee Directory</h2>
+            <p>Search and filter employees easily</p>
+          </div>
+          <div class="filter-box">
+            <div class="filter-group">
+              <label for="searchName">Search by Name / ID</label>
+              <input type="text" id="searchName" placeholder="e.g. EMP101" />
+            </div>
+            <div class="filter-group">
+              <label for="filterDept">Filter by Department</label>
+              <select id="filterDept">
+                <option value="">All Departments</option>
+                <option value="Artificial Intelligence">
+                  Artificial Intelligence
+                </option>
+                <option value="Cloud Computing">Cloud Computing</option>
+                <option value="Cyber Security">Cyber Security</option>
+                <option value="Database Management">Database Management</option>
+                <option value="Data Science">Data Science</option>
+                <option value="DevOps">DevOps</option>
+                <option value="IT Support">IT Support</option>
+                <option value="Mobile App Development">
+                  Mobile App Development
+                </option>
+                <option value="Software Development">
+                  Software Development
+                </option>
+                <option value="Web Development">Web Development</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterRole">Filter by Role</label>
+              <select id="filterRole">
+                <option value="">All Roles</option>
+                <option value="Android Developer">Android Developer</option>
+                <option value="Cloud Engineer">Cloud Engineer</option>
+                <option value="Database Administrator">
+                  Database Administrator
+                </option>
+                <option value="Data Analyst">Data Analyst</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="ML Engineer">ML Engineer</option>
+                <option value="Security Analyst">Security Analyst</option>
+                <option value="System Administrator">
+                  System Administrator
+                </option>
+                <option value="UI/UX Designer">UI/UX Designer</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterGender">Filter by Gender</label>
+              <select id="filterGender">
+                <option value="">All</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterStatus">Filter by Status</label>
+              <select id="filterStatus">
+                <option value="">All</option>
+                <option value="Present">Present</option>
+                <option value="On Permission">On Permission</option>
+                <option value="On Leave">On Leave</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>&nbsp;</label>
+              <button id="clearBtn">✖ Clear Filters</button>
+            </div>
+          </div>
+          <div class="result-info">
+            Showing <span id="resultCount">0</span> employee(s)
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Full Name</th>
+                  <th>Date of Birth</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Department</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+            <div id="noResult" class="no-result hidden">
+              😕 No employees found matching your filters.
+            </div>
+          </div>
+        </section>
+        <section id="timer-tab" class="tab-content-panel">
+          <div class="section-header-title">
+            <h2>Work Timer</h2>
+            <p>Track your daily work hours and log laps</p>
+          </div>
+          <div class="stopwatch-container">
+            <div id="display">00:00:00</div>
+            <div class="controls">
+              <button id="startStopBtn" class="btn start">Start</button>
+              <button id="lapBtn" class="btn">Lap</button>
+              <button id="resetBtn" class="btn">Reset</button>
+            </div>
+            <div class="laps-container">
+              <ul id="lapsList"></ul>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
