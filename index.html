@@ -142,7 +142,6 @@
                     type="password"
                     id="signup-password"
                     placeholder="Create a password"
-                    oninput="checkPasswordStrength(this.value)"
                   />
                   <button
                     type="button"
@@ -151,12 +150,6 @@
                   >
                     Show
                   </button>
-                </div>
-                <div class="password-strength-wrapper">
-                  <div class="strength-bar-container">
-                    <div id="strength-bar" class="strength-bar"></div>
-                  </div>
-                  <span id="strength-text"></span>
                 </div>
               </div>
               <div class="field">
@@ -249,7 +242,6 @@
             >
               Clock In
             </button>
-            <button class="header-btn" onclick="toggleTheme()">Theme</button>
             <button class="header-btn signout-btn" onclick="handleSignOut()">
               Sign Out
             </button>
@@ -258,35 +250,9 @@
       </header>
       <main class="dashboard-content">
         <section id="directory-tab" class="tab-content-panel active">
-          <div class="section-header-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <div>
-              <h2>Employee Directory</h2>
-              <p>Search and filter employees easily</p>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button class="header-btn" onclick="exportData('csv')">Export CSV</button>
-              <button class="header-btn" onclick="exportData('json')">Export JSON</button>
-              <button id="add-employee-btn" class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="openAddEmployeeModal()">+ Add Employee</button>
-            </div>
-          </div>
-          <!-- Stats Panel -->
-          <div id="stats-panel" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-              <div style="font-size: 12px; font-weight: bold; color: #666;">Total Employees</div>
-              <div id="stat-total" style="font-size: 20px; font-weight: bold; margin-top: 5px;">0</div>
-            </div>
-            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-              <div style="font-size: 12px; font-weight: bold; color: #666;">Present</div>
-              <div id="stat-present" style="font-size: 20px; font-weight: bold; color: #28a745; margin-top: 5px;">0</div>
-            </div>
-            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-              <div style="font-size: 12px; font-weight: bold; color: #666;">On Leave</div>
-              <div id="stat-leave" style="font-size: 20px; font-weight: bold; color: #dc3545; margin-top: 5px;">0</div>
-            </div>
-            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-              <div style="font-size: 12px; font-weight: bold; color: #666;">Avg Age</div>
-              <div id="stat-avg-age" style="font-size: 20px; font-weight: bold; margin-top: 5px;">0</div>
-            </div>
+          <div class="section-header-title">
+            <h2>Employee Directory</h2>
+            <p>Search and filter employees easily</p>
           </div>
           <div class="filter-box">
             <div class="filter-group">
@@ -364,16 +330,15 @@
             <table>
               <thead>
                 <tr>
-                  <th onclick="handleSort('id')" style="cursor: pointer; user-select: none;">Employee ID <span id="sort-icon-id"></span></th>
-                  <th onclick="handleSort('name')" style="cursor: pointer; user-select: none;">Full Name <span id="sort-icon-name"></span></th>
-                  <th onclick="handleSort('dob')" style="cursor: pointer; user-select: none;">Date of Birth <span id="sort-icon-dob"></span></th>
-                  <th onclick="handleSort('age')" style="cursor: pointer; user-select: none;">Age <span id="sort-icon-age"></span></th>
-                  <th onclick="handleSort('gender')" style="cursor: pointer; user-select: none;">Gender <span id="sort-icon-gender"></span></th>
-                  <th onclick="handleSort('department')" style="cursor: pointer; user-select: none;">Department <span id="sort-icon-department"></span></th>
-                  <th onclick="handleSort('role')" style="cursor: pointer; user-select: none;">Role <span id="sort-icon-role"></span></th>
-                  <th onclick="handleSort('email')" style="cursor: pointer; user-select: none;">Email <span id="sort-icon-email"></span></th>
-                  <th onclick="handleSort('status')" style="cursor: pointer; user-select: none;">Status <span id="sort-icon-status"></span></th>
-                  <th style="user-select: none;">Actions</th>
+                  <th>Employee ID</th>
+                  <th>Full Name</th>
+                  <th>Date of Birth</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Department</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -393,7 +358,6 @@
             <div class="controls">
               <button id="startStopBtn" class="btn start">Start</button>
               <button id="lapBtn" class="btn">Lap</button>
-              <button id="breakBtn" class="btn" onclick="toggleBreak()">Break</button>
               <button id="resetBtn" class="btn">Reset</button>
             </div>
             <div class="laps-container">
@@ -402,29 +366,6 @@
           </div>
         </section>
       </main>
-    </div>
-    <!-- Simple Add/Edit Form Overlay -->
-    <div id="employee-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999;">
-      <div style="background:#fff; padding:20px; border-radius:5px; width:300px; display:flex; flex-direction:column; gap:10px;">
-        <h3 id="modal-title">Add Employee</h3>
-        <input id="emp-id" placeholder="Employee ID (e.g. EMP111)">
-        <input id="emp-name" placeholder="Full Name">
-        <input id="emp-dob" type="date">
-        <select id="emp-gender">
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-        <input id="emp-dept" placeholder="Department">
-        <input id="emp-role" placeholder="Role">
-        <input id="emp-email" placeholder="Email">
-        <select id="emp-status">
-          <option value="Present">Present</option>
-          <option value="On Leave">On Leave</option>
-          <option value="On Permission">On Permission</option>
-        </select>
-        <button onclick="saveEmployee()" style="background:#007bff; color:#fff; border:none; padding:8px; border-radius:4px; cursor:pointer;">Save</button>
-        <button onclick="closeEmployeeModal()" style="background:#ccc; border:none; padding:8px; border-radius:4px; cursor:pointer;">Cancel</button>
-      </div>
     </div>
     <script src="script.js"></script>
   </body>
