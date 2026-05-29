@@ -1,4 +1,4 @@
-var employees = [
+var defaultEmployees = [
   {
     id: "EMP101",
     name: "Arun",
@@ -100,6 +100,10 @@ var employees = [
     status: "Present",
   },
 ];
+var employees = JSON.parse(localStorage.getItem("employees")) || defaultEmployees;
+if (!localStorage.getItem("employees")) {
+  localStorage.setItem("employees", JSON.stringify(employees));
+}
 var clockTimer = null;
 var isRunning = false;
 var startTime = 0;
@@ -711,4 +715,64 @@ function resetStopwatch() {
   localStorage.removeItem(getStopwatchKey("startTime"));
   localStorage.removeItem(getStopwatchKey("accumulatedTime"));
   localStorage.removeItem(getStopwatchKey("laps"));
+}
+
+var editingEmpId = null;
+
+function openAddEmployeeModal() {
+  editingEmpId = null;
+  document.getElementById("modal-title").innerText = "Add Employee";
+  document.getElementById("emp-id").value = "";
+  document.getElementById("emp-id").disabled = false;
+  document.getElementById("emp-name").value = "";
+  document.getElementById("emp-dob").value = "";
+  document.getElementById("emp-gender").value = "Male";
+  document.getElementById("emp-dept").value = "";
+  document.getElementById("emp-role").value = "";
+  document.getElementById("emp-email").value = "";
+  document.getElementById("emp-status").value = "Present";
+  document.getElementById("employee-modal").style.display = "flex";
+}
+
+function closeEmployeeModal() {
+  document.getElementById("employee-modal").style.display = "none";
+}
+
+function saveEmployee() {
+  var id = document.getElementById("emp-id").value.trim();
+  var name = document.getElementById("emp-name").value.trim();
+  var dob = document.getElementById("emp-dob").value;
+  var gender = document.getElementById("emp-gender").value;
+  var dept = document.getElementById("emp-dept").value.trim();
+  var role = document.getElementById("emp-role").value.trim();
+  var email = document.getElementById("emp-email").value.trim();
+  var status = document.getElementById("emp-status").value;
+
+  if (!id || !name || !dob || !dept || !role || !email) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  // Check duplicate ID
+  for (var i = 0; i < employees.length; i++) {
+    if (employees[i].id.toLowerCase() === id.toLowerCase()) {
+      alert("Employee ID already exists!");
+      return;
+    }
+  }
+
+  employees.push({
+    id: id,
+    name: name,
+    dob: dob,
+    gender: gender,
+    department: dept,
+    role: role,
+    email: email,
+    status: status
+  });
+
+  localStorage.setItem("employees", JSON.stringify(employees));
+  closeEmployeeModal();
+  applyFilters();
 }

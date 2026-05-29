@@ -377,6 +377,29 @@
         </section>
       </main>
     </div>
+    <!-- Simple Add/Edit Form Overlay -->
+    <div id="employee-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999;">
+      <div style="background:#fff; padding:20px; border-radius:5px; width:300px; display:flex; flex-direction:column; gap:10px;">
+        <h3 id="modal-title">Add Employee</h3>
+        <input id="emp-id" placeholder="Employee ID (e.g. EMP111)">
+        <input id="emp-name" placeholder="Full Name">
+        <input id="emp-dob" type="date">
+        <select id="emp-gender">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+        <input id="emp-dept" placeholder="Department">
+        <input id="emp-role" placeholder="Role">
+        <input id="emp-email" placeholder="Email">
+        <select id="emp-status">
+          <option value="Present">Present</option>
+          <option value="On Leave">On Leave</option>
+          <option value="On Permission">On Permission</option>
+        </select>
+        <button onclick="saveEmployee()" style="background:#007bff; color:#fff; border:none; padding:8px; border-radius:4px; cursor:pointer;">Save</button>
+        <button onclick="closeEmployeeModal()" style="background:#ccc; border:none; padding:8px; border-radius:4px; cursor:pointer;">Cancel</button>
+      </div>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>
