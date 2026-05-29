@@ -596,9 +596,17 @@ function formatTime(totalMs) {
   );
 }
 
+var breakTime = 0;
+var isBreak = false;
+var breakStart = 0;
+
 function tickStopwatch() {
   var now = Date.now();
   var currentElapsed = accumulatedTime + (now - startTime);
+  if (isBreak) {
+    currentElapsed -= (now - breakStart);
+  }
+  currentElapsed -= breakTime;
   document.getElementById("display").innerText = formatTime(currentElapsed);
 }
 
@@ -676,6 +684,15 @@ function toggleStopwatch() {
     isRunning = false;
     clearInterval(timerId);
     timerId = null;
+    if (isBreak) {
+      isBreak = false;
+      breakTime += Date.now() - breakStart;
+      var btn = document.getElementById("breakBtn");
+      if (btn) {
+        btn.innerText = "Break";
+        btn.style.backgroundColor = "";
+      }
+    }
     accumulatedTime += Date.now() - startTime;
     startStopBtn.innerText = "Start";
     startStopBtn.classList.remove("stop");
@@ -712,6 +729,14 @@ function resetStopwatch() {
   accumulatedTime = 0;
   lapCounter = 0;
   laps = [];
+  breakTime = 0;
+  isBreak = false;
+  breakStart = 0;
+  var btn = document.getElementById("breakBtn");
+  if (btn) {
+    btn.innerText = "Break";
+    btn.style.backgroundColor = "";
+  }
   document.getElementById("display").innerText = "00:00:00";
   var startStopBtn = document.getElementById("startStopBtn");
   startStopBtn.innerText = "Start";
@@ -876,4 +901,24 @@ function exportData(type) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function toggleBreak() {
+  if (!isRunning) {
+    alert("Start the timer first!");
+    return;
+  }
+  var btn = document.getElementById("breakBtn");
+  if (!isBreak) {
+    isBreak = true;
+    breakStart = Date.now();
+    btn.innerText = "Resume Work";
+    btn.style.backgroundColor = "#ffc107";
+  } else {
+    isBreak = false;
+    breakTime += Date.now() - breakStart;
+    btn.innerText = "Break";
+    btn.style.backgroundColor = "";
+    alert("Total break time: " + Math.floor(breakTime / 1000) + " seconds.");
+  }
 }
