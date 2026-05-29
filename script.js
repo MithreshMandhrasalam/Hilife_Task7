@@ -227,6 +227,39 @@ function handleSignIn(e) {
   showGreeting(u, users[u].firstName + " " + users[u].lastName);
 }
 
+function checkPasswordStrength(p) {
+  var strengthBar = document.getElementById("strength-bar");
+  var strengthText = document.getElementById("strength-text");
+  if (!p) {
+    strengthBar.className = "strength-bar";
+    strengthText.textContent = "";
+    strengthText.className = "";
+    return;
+  }
+  
+  var score = 0;
+  if (p.length >= 6) score++;
+  if (p.length >= 10) score++;
+  if (/[A-Z]/.test(p)) score++;
+  if (/[a-z]/.test(p)) score++;
+  if (/[0-9]/.test(p)) score++;
+  if (/[^A-Za-z0-9]/.test(p)) score++;
+  
+  var strength = "Weak";
+  var className = "weak";
+  if (score >= 5) {
+    strength = "Strong";
+    className = "strong";
+  } else if (score >= 3) {
+    strength = "Medium";
+    className = "medium";
+  }
+  
+  strengthBar.className = "strength-bar " + className;
+  strengthText.textContent = strength + " Password";
+  strengthText.className = className;
+}
+
 function handleSignUp(e) {
   e.preventDefault();
   var f = document.getElementById("signup-firstname").value.trim();
@@ -239,8 +272,8 @@ function handleSignUp(e) {
     alert("Fill all fields");
     return;
   }
-  if (p.length < 6) {
-    alert("Password min 6 chars");
+  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/.test(p)) {
+    alert("Password must be at least 6 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
     return;
   }
   if (p !== c) {

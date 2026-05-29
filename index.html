@@ -142,6 +142,7 @@
                     type="password"
                     id="signup-password"
                     placeholder="Create a password"
+                    oninput="checkPasswordStrength(this.value)"
                   />
                   <button
                     type="button"
@@ -150,6 +151,12 @@
                   >
                     Show
                   </button>
+                </div>
+                <div class="password-strength-wrapper">
+                  <div class="strength-bar-container">
+                    <div id="strength-bar" class="strength-bar"></div>
+                  </div>
+                  <span id="strength-text"></span>
                 </div>
               </div>
               <div class="field">

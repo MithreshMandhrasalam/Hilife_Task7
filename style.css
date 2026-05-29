@@ -632,3 +632,59 @@ tbody td {
     width: 100%;
   }
 }
+
+/* Password strength indicator styles */
+.password-strength-wrapper {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.strength-bar-container {
+  height: 4px;
+  background-color: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.strength-bar {
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-bar.weak {
+  width: 33%;
+  background-color: #dc3545;
+}
+
+.strength-bar.medium {
+  width: 66%;
+  background-color: #ffc107;
+}
+
+.strength-bar.strong {
+  width: 100%;
+  background-color: #28a745;
+}
+
+#strength-text {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+  transition: color 0.3s ease;
+}
+
+#strength-text.weak {
+  color: #dc3545;
+}
+
+#strength-text.medium {
+  color: #d39e00;
+}
+
+#strength-text.strong {
+  color: #28a745;
+}
