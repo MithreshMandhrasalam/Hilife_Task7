@@ -840,3 +840,40 @@ function toggleTheme() {
   var isDark = document.body.classList.contains("dark-mode");
   localStorage.setItem("theme", isDark ? "dark" : "light");
 }
+
+function exportData(type) {
+  var content, filename, mime;
+  if (type === 'json') {
+    content = JSON.stringify(employees, null, 2);
+    filename = "employees.json";
+    mime = "application/json";
+  } else {
+    var headers = ["Employee ID", "Full Name", "Date of Birth", "Gender", "Department", "Role", "Email", "Status"];
+    var rows = [headers.join(",")];
+    for (var i = 0; i < employees.length; i++) {
+      var emp = employees[i];
+      var row = [
+        emp.id,
+        '"' + emp.name.replace(/"/g, '""') + '"',
+        emp.dob,
+        emp.gender,
+        '"' + emp.department.replace(/"/g, '""') + '"',
+        '"' + emp.role.replace(/"/g, '""') + '"',
+        emp.email,
+        emp.status
+      ];
+      rows.push(row.join(","));
+    }
+    content = rows.join("\n");
+    filename = "employees.csv";
+    mime = "text/csv";
+  }
+
+  var blob = new Blob([content], { type: mime });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}

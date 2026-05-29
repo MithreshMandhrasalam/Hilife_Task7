@@ -263,7 +263,11 @@
               <h2>Employee Directory</h2>
               <p>Search and filter employees easily</p>
             </div>
-            <button id="add-employee-btn" class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="openAddEmployeeModal()">+ Add Employee</button>
+            <div style="display: flex; gap: 8px;">
+              <button class="header-btn" onclick="exportData('csv')">Export CSV</button>
+              <button class="header-btn" onclick="exportData('json')">Export JSON</button>
+              <button id="add-employee-btn" class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="openAddEmployeeModal()">+ Add Employee</button>
+            </div>
           </div>
           <div class="filter-box">
             <div class="filter-group">
