@@ -337,15 +337,15 @@
             <table>
               <thead>
                 <tr>
-                  <th>Employee ID</th>
-                  <th>Full Name</th>
-                  <th>Date of Birth</th>
-                  <th>Age</th>
-                  <th>Gender</th>
-                  <th>Department</th>
-                  <th>Role</th>
-                  <th>Email</th>
-                  <th>Status</th>
+                  <th onclick="handleSort('id')" style="cursor: pointer; user-select: none;">Employee ID <span id="sort-icon-id"></span></th>
+                  <th onclick="handleSort('name')" style="cursor: pointer; user-select: none;">Full Name <span id="sort-icon-name"></span></th>
+                  <th onclick="handleSort('dob')" style="cursor: pointer; user-select: none;">Date of Birth <span id="sort-icon-dob"></span></th>
+                  <th onclick="handleSort('age')" style="cursor: pointer; user-select: none;">Age <span id="sort-icon-age"></span></th>
+                  <th onclick="handleSort('gender')" style="cursor: pointer; user-select: none;">Gender <span id="sort-icon-gender"></span></th>
+                  <th onclick="handleSort('department')" style="cursor: pointer; user-select: none;">Department <span id="sort-icon-department"></span></th>
+                  <th onclick="handleSort('role')" style="cursor: pointer; user-select: none;">Role <span id="sort-icon-role"></span></th>
+                  <th onclick="handleSort('email')" style="cursor: pointer; user-select: none;">Email <span id="sort-icon-email"></span></th>
+                  <th onclick="handleSort('status')" style="cursor: pointer; user-select: none;">Status <span id="sort-icon-status"></span></th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>

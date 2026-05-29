@@ -107,6 +107,8 @@ var accumulatedTime = 0;
 var timerId = null;
 var lapCounter = 0;
 var laps = [];
+var currentSortColumn = null;
+var currentSortDirection = "asc";
 
 window.onload = function () {
   var rem = localStorage.getItem("rememberedUsername");
@@ -476,6 +478,51 @@ function showTable(filteredList) {
   }
 }
 
+function sortEmployees(list, column, direction) {
+  if (!column) return list;
+  
+  return list.sort(function(a, b) {
+    var valA, valB;
+    if (column === 'age') {
+      valA = calculateAge(a.dob);
+      valB = calculateAge(b.dob);
+    } else {
+      valA = (a[column] || "").toString().toLowerCase();
+      valB = (b[column] || "").toString().toLowerCase();
+    }
+    
+    if (valA < valB) return direction === 'asc' ? -1 : 1;
+    if (valA > valB) return direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function updateSortIcons() {
+  var columns = ['id', 'name', 'dob', 'age', 'gender', 'department', 'role', 'email', 'status'];
+  for (var i = 0; i < columns.length; i++) {
+    var col = columns[i];
+    var iconEl = document.getElementById("sort-icon-" + col);
+    if (iconEl) {
+      if (currentSortColumn === col) {
+        iconEl.textContent = currentSortDirection === 'asc' ? " ▲" : " ▼";
+      } else {
+        iconEl.textContent = "";
+      }
+    }
+  }
+}
+
+function handleSort(column) {
+  if (currentSortColumn === column) {
+    currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSortColumn = column;
+    currentSortDirection = 'asc';
+  }
+  updateSortIcons();
+  applyFilters();
+}
+
 function applyFilters() {
   var searchText = document
     .getElementById("searchName")
@@ -499,7 +546,8 @@ function applyFilters() {
       filtered.push(emp);
     }
   }
-  showTable(filtered);
+  var sorted = sortEmployees(filtered, currentSortColumn, currentSortDirection);
+  showTable(sorted);
 }
 
 function clearFilters() {
@@ -508,6 +556,9 @@ function clearFilters() {
   document.getElementById("filterRole").value = "";
   document.getElementById("filterGender").value = "";
   document.getElementById("filterStatus").value = "";
+  currentSortColumn = null;
+  currentSortDirection = "asc";
+  updateSortIcons();
   showTable(employees);
 }
 
