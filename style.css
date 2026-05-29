@@ -688,3 +688,27 @@ tbody td {
 #strength-text.strong {
   color: #28a745;
 }
+
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+body.dark-mode .navbar,
+body.dark-mode .dashboard-content,
+body.dark-mode .filter-box,
+body.dark-mode .table-wrapper,
+body.dark-mode table,
+body.dark-mode thead tr,
+body.dark-mode tbody tr,
+body.dark-mode .stopwatch-container,
+body.dark-mode .modal {
+  background-color: #1e1e1e;
+  color: #fff;
+  border-color: #333;
+}
+body.dark-mode input,
+body.dark-mode select {
+  background-color: #2b2b2b;
+  color: #fff;
+  border-color: #444;
+}

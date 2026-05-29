@@ -115,6 +115,9 @@ var currentSortColumn = null;
 var currentSortDirection = "asc";
 
 window.onload = function () {
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+  }
   var rem = localStorage.getItem("rememberedUsername");
   if (rem) {
     document.getElementById("signin-username").value = rem;
@@ -830,4 +833,10 @@ function deleteEmployee(id) {
     localStorage.setItem("employees", JSON.stringify(employees));
     applyFilters();
   }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark-mode");
+  var isDark = document.body.classList.contains("dark-mode");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
 }
