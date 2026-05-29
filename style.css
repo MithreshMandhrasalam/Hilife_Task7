@@ -712,3 +712,16 @@ body.dark-mode select {
   color: #fff;
   border-color: #444;
 }
+
+/* Simple UI transitions and styling */
+* {
+  transition: background-color 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+button:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
+.filter-box, .stopwatch-container, .table-wrapper, .modal {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px !important;
+}
