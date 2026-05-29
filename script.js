@@ -463,6 +463,9 @@ function buildTableRows(employeeList) {
       "'>" +
       emp.status +
       "</span></td>" +
+      "<td>" +
+      "<button onclick=\"openEditModal('" + emp.id + "')\" style=\"background:#ffc107; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;\">Edit</button>" +
+      "</td>" +
       "</tr>";
   }
   return html;
@@ -753,26 +756,64 @@ function saveEmployee() {
     return;
   }
 
-  // Check duplicate ID
-  for (var i = 0; i < employees.length; i++) {
-    if (employees[i].id.toLowerCase() === id.toLowerCase()) {
-      alert("Employee ID already exists!");
-      return;
+  if (editingEmpId === null) {
+    // Add Mode: Check duplicate ID
+    for (var i = 0; i < employees.length; i++) {
+      if (employees[i].id.toLowerCase() === id.toLowerCase()) {
+        alert("Employee ID already exists!");
+        return;
+      }
+    }
+    employees.push({
+      id: id,
+      name: name,
+      dob: dob,
+      gender: gender,
+      department: dept,
+      role: role,
+      email: email,
+      status: status
+    });
+  } else {
+    // Edit Mode: Update existing
+    for (var i = 0; i < employees.length; i++) {
+      if (employees[i].id === editingEmpId) {
+        employees[i].name = name;
+        employees[i].dob = dob;
+        employees[i].gender = gender;
+        employees[i].department = dept;
+        employees[i].role = role;
+        employees[i].email = email;
+        employees[i].status = status;
+        break;
+      }
     }
   }
-
-  employees.push({
-    id: id,
-    name: name,
-    dob: dob,
-    gender: gender,
-    department: dept,
-    role: role,
-    email: email,
-    status: status
-  });
 
   localStorage.setItem("employees", JSON.stringify(employees));
   closeEmployeeModal();
   applyFilters();
+}
+
+function openEditModal(id) {
+  var emp = null;
+  for (var i = 0; i < employees.length; i++) {
+    if (employees[i].id === id) {
+      emp = employees[i];
+      break;
+    }
+  }
+  if (!emp) return;
+  editingEmpId = id;
+  document.getElementById("modal-title").innerText = "Edit Employee";
+  document.getElementById("emp-id").value = emp.id;
+  document.getElementById("emp-id").disabled = true;
+  document.getElementById("emp-name").value = emp.name;
+  document.getElementById("emp-dob").value = emp.dob;
+  document.getElementById("emp-gender").value = emp.gender;
+  document.getElementById("emp-dept").value = emp.department;
+  document.getElementById("emp-role").value = emp.role;
+  document.getElementById("emp-email").value = emp.email;
+  document.getElementById("emp-status").value = emp.status;
+  document.getElementById("employee-modal").style.display = "flex";
 }
