@@ -487,6 +487,26 @@ function showTable(filteredList) {
     tableBody.innerHTML = buildTableRows(filteredList);
     noResult.classList.add("hidden");
   }
+  updateStats(filteredList);
+}
+
+function updateStats(list) {
+  var total = list.length;
+  var present = 0;
+  var leave = 0;
+  var ageSum = 0;
+  for (var i = 0; i < list.length; i++) {
+    var emp = list[i];
+    if (emp.status === "Present") present++;
+    if (emp.status === "On Leave") leave++;
+    ageSum += calculateAge(emp.dob);
+  }
+  var avgAge = total > 0 ? Math.round(ageSum / total) : 0;
+  
+  document.getElementById("stat-total").innerText = total;
+  document.getElementById("stat-present").innerText = present;
+  document.getElementById("stat-leave").innerText = leave;
+  document.getElementById("stat-avg-age").innerText = avgAge;
 }
 
 function sortEmployees(list, column, direction) {

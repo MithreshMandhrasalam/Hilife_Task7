@@ -269,6 +269,25 @@
               <button id="add-employee-btn" class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="openAddEmployeeModal()">+ Add Employee</button>
             </div>
           </div>
+          <!-- Stats Panel -->
+          <div id="stats-panel" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+              <div style="font-size: 12px; font-weight: bold; color: #666;">Total Employees</div>
+              <div id="stat-total" style="font-size: 20px; font-weight: bold; margin-top: 5px;">0</div>
+            </div>
+            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+              <div style="font-size: 12px; font-weight: bold; color: #666;">Present</div>
+              <div id="stat-present" style="font-size: 20px; font-weight: bold; color: #28a745; margin-top: 5px;">0</div>
+            </div>
+            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+              <div style="font-size: 12px; font-weight: bold; color: #666;">On Leave</div>
+              <div id="stat-leave" style="font-size: 20px; font-weight: bold; color: #dc3545; margin-top: 5px;">0</div>
+            </div>
+            <div style="flex: 1; min-width: 120px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+              <div style="font-size: 12px; font-weight: bold; color: #666;">Avg Age</div>
+              <div id="stat-avg-age" style="font-size: 20px; font-weight: bold; margin-top: 5px;">0</div>
+            </div>
+          </div>
           <div class="filter-box">
             <div class="filter-group">
               <label for="searchName">Search by Name / ID</label>
