@@ -464,7 +464,8 @@ function buildTableRows(employeeList) {
       emp.status +
       "</span></td>" +
       "<td>" +
-      "<button onclick=\"openEditModal('" + emp.id + "')\" style=\"background:#ffc107; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;\">Edit</button>" +
+      "<button onclick=\"openEditModal('" + emp.id + "')\" style=\"background:#ffc107; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; margin-right:5px;\">Edit</button>" +
+      "<button onclick=\"deleteEmployee('" + emp.id + "')\" style=\"background:#dc3545; color:#fff; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;\">Delete</button>" +
       "</td>" +
       "</tr>";
   }
@@ -816,4 +817,17 @@ function openEditModal(id) {
   document.getElementById("emp-email").value = emp.email;
   document.getElementById("emp-status").value = emp.status;
   document.getElementById("employee-modal").style.display = "flex";
+}
+
+function deleteEmployee(id) {
+  if (confirm("Are you sure you want to delete employee " + id + "?")) {
+    for (var i = 0; i < employees.length; i++) {
+      if (employees[i].id === id) {
+        employees.splice(i, 1);
+        break;
+      }
+    }
+    localStorage.setItem("employees", JSON.stringify(employees));
+    applyFilters();
+  }
 }
