@@ -3,49 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HiLife.AI - Unified Employee Workspace & Directory Portal</title>
-    <meta name="description" content="HiLife.AI is the ultimate employee workspace portal integrating secure authentication, a real-time employee directory, and a high-performance work stopwatch." />
+    <title>HiLife Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-
+    <!-- Login Screen -->
     <div id="login-screen" class="page">
       <div class="left-panel">
         <div class="left-content">
-          <div class="logo-badge">WORKSPACE</div>
-          <h1 class="logo">
+          <div class="logo">
             <span class="logo-text">HILIFE<span class="logo-ai">.AI</span></span>
-          </h1>
-          <p class="left-sub">The unified digital portal for employee management, directory lookup, work status clocking, and daily activity tracking.</p>
-          <div class="left-features">
-            <div class="feature-item">
-              <span class="feature-icon">🔒</span>
-              <div>
-                <h4>Secure Portal</h4>
-                <p>Protected session management with persistence.</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <span class="feature-icon">👥</span>
-              <div>
-                <h4>Real-Time Directory</h4>
-                <p>Instant search, department filters & age indicators.</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <span class="feature-icon">⏱️</span>
-              <div>
-                <h4>Work Stopwatch</h4>
-                <p>Tracks active work sessions with precision lap logging.</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -77,7 +51,7 @@
                 <input
                   type="text"
                   id="signin-username"
-                  placeholder="Enter your username"
+                  placeholder="Enter username"
                 />
               </div>
               <div class="field">
@@ -86,7 +60,7 @@
                   <input
                     type="password"
                     id="signin-password"
-                    placeholder="Enter your password"
+                    placeholder="Enter password"
                   />
                   <button
                     type="button"
@@ -113,7 +87,7 @@
                 Sign In
               </button>
               <p class="switch-text">
-                No account yet?
+                No account?
                 <button
                   type="button"
                   class="text-link bold"
@@ -149,11 +123,11 @@
                 <input
                   type="text"
                   id="signup-username"
-                  placeholder="Choose a username"
+                  placeholder="Choose username"
                 />
               </div>
               <div class="field">
-                <label for="signup-email">Email Address</label>
+                <label for="signup-email">Email</label>
                 <input
                   type="email"
                   id="signup-email"
@@ -166,7 +140,7 @@
                   <input
                     type="password"
                     id="signup-password"
-                    placeholder="Create a password"
+                    placeholder="Create password"
                   />
                   <button
                     type="button"
@@ -183,7 +157,7 @@
                   <input
                     type="password"
                     id="signup-confirm"
-                    placeholder="Re-enter your password"
+                    placeholder="Re-enter password"
                   />
                   <button
                     type="button"
@@ -213,13 +187,12 @@
       </div>
     </div>
 
-    <!-- CLOCK-IN / OUT GREETING OVERLAY MODAL -->
+    <!-- Clock Welcome Popup Overlay -->
     <div id="greeting-overlay" class="overlay" hidden>
       <div class="modal">
-        <div class="modal-header-icon">👋</div>
         <p class="modal-greeting">Welcome back,</p>
         <h2 class="modal-name" id="greeting-name">User!</h2>
-        <p class="modal-sub">You are logged into the <strong>HILIFE.AI</strong> system.</p>
+        <p class="modal-sub">You are signed in to <strong>HILIFE.AI</strong></p>
         <div class="modal-clock-box">
           <p class="modal-time" id="greeting-time">00:00:00</p>
           <p class="clock-status" id="clock-status">Clocked Out at None</p>
@@ -242,7 +215,7 @@
       </div>
     </div>
 
-    <!-- MAIN DASHBOARD SCREEN -->
+    <!-- Main Dashboard -->
     <div id="dashboard-screen" class="hidden">
       <header class="navbar">
         <div class="nav-container">
@@ -255,24 +228,22 @@
               class="nav-tab-btn active"
               onclick="switchDashboardTab('directory')"
             >
-              👥 Directory
+              Directory
             </button>
             <button
               id="tab-btn-timer"
               class="nav-tab-btn"
               onclick="switchDashboardTab('timer')"
             >
-              ⏱️ Work Timer
+              Work Timer
             </button>
           </div>
           <div class="user-menu">
-            <div class="user-info-text">
-              <span id="user-greeting">Hello, User</span>
-              <span id="header-clock-status" class="status-indicator">Out</span>
-            </div>
+            <span id="user-greeting">Hello, User</span>
+            <span id="header-clock-status" class="status-indicator">Out</span>
             <button
               id="header-clock-btn"
-              class="header-btn clock-btn"
+              class="header-btn"
               onclick="handleHeaderClockToggle()"
             >
               Clock In
@@ -284,19 +255,19 @@
         </div>
       </header>
       <main class="dashboard-content">
-        <!-- DIRECTORY TAB -->
+        <!-- Directory Tab -->
         <section id="directory-tab" class="tab-content-panel active">
           <div class="section-header-title">
             <h2>Employee Directory</h2>
-            <p>Search, filter, and track employee statuses across departments</p>
+            <p>Search and filter employees easily</p>
           </div>
           <div class="filter-box">
             <div class="filter-group">
               <label for="searchName">Search by Name / ID</label>
-              <input type="text" id="searchName" placeholder="Search..." />
+              <input type="text" id="searchName" placeholder="e.g. EMP101" />
             </div>
             <div class="filter-group">
-              <label for="filterDept">Department</label>
+              <label for="filterDept">Filter by Department</label>
               <select id="filterDept">
                 <option value="">All Departments</option>
                 <option value="Artificial Intelligence">Artificial Intelligence</option>
@@ -312,7 +283,7 @@
               </select>
             </div>
             <div class="filter-group">
-              <label for="filterRole">Role</label>
+              <label for="filterRole">Filter by Role</label>
               <select id="filterRole">
                 <option value="">All Roles</option>
                 <option value="Android Developer">Android Developer</option>
@@ -328,28 +299,29 @@
               </select>
             </div>
             <div class="filter-group">
-              <label for="filterGender">Gender</label>
+              <label for="filterGender">Filter by Gender</label>
               <select id="filterGender">
-                <option value="">All Genders</option>
+                <option value="">All</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
             </div>
             <div class="filter-group">
-              <label for="filterStatus">Status</label>
+              <label for="filterStatus">Filter by Status</label>
               <select id="filterStatus">
-                <option value="">All Statuses</option>
+                <option value="">All</option>
                 <option value="Present">Present</option>
                 <option value="On Permission">On Permission</option>
                 <option value="On Leave">On Leave</option>
               </select>
             </div>
-            <div class="filter-group btn-align">
-              <button id="clearBtn">Clear Filters</button>
+            <div class="filter-group">
+              <label>&nbsp;</label>
+              <button id="clearBtn">✖ Clear Filters</button>
             </div>
           </div>
           <div class="result-info">
-            Matches found: <span id="resultCount">0</span> employee(s)
+            Showing <span id="resultCount">0</span> employee(s)
           </div>
           <div class="table-wrapper">
             <table>
@@ -369,12 +341,12 @@
               <tbody id="tableBody"></tbody>
             </table>
             <div id="noResult" class="no-result hidden">
-              🔍 No employees match the filter criteria.
+              No employees found matching your filters.
             </div>
           </div>
         </section>
 
-        <!-- WORK TIMER & ATTENDANCE DASHBOARD TAB -->
+        <!-- Attendance & Work Timer Tab -->
         <section id="timer-tab" class="tab-content-panel">
           <div class="section-header-title">
             <h2>Attendance & Work Timer</h2>
@@ -382,10 +354,10 @@
           </div>
           
           <div class="timer-grid">
-            <!-- Left Side: Stopwatch -->
+            <!-- Stopwatch -->
             <div class="stopwatch-card">
               <div class="card-header">
-                <h3>⏱️ Work Session Stopwatch</h3>
+                <h3>Work Session Stopwatch</h3>
               </div>
               <div class="stopwatch-ring">
                 <div id="display">00:00:00</div>
@@ -402,13 +374,12 @@
               </div>
             </div>
 
-            <!-- Right Side: Attendance Dashboard -->
+            <!-- Attendance stats -->
             <div class="attendance-stats-card">
               <div class="card-header">
-                <h3>📊 Today's Attendance Stats</h3>
+                <h3>Today's Attendance Stats</h3>
               </div>
               
-              <!-- Stats Row Grid -->
               <div class="stats-row">
                 <div class="stat-widget">
                   <div class="stat-label">Shift Status</div>
@@ -439,7 +410,7 @@
                 </div>
               </div>
 
-              <!-- Attendance Logs List -->
+              <!-- Attendance Logs -->
               <div class="logs-widget">
                 <div class="logs-header">
                   <span>Attendance History (Today)</span>
