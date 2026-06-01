@@ -164,15 +164,59 @@ function showGreeting(username, name) {
 
 function handleClockToggle() {
   var u = localStorage.getItem("currentUser") || document.getElementById("greeting-overlay").getAttribute("data-user");
+  if (!u) return;
+  
   var time = new Date().toLocaleTimeString("en-IN");
+  var dateStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
   var clockData = JSON.parse(localStorage.getItem("clock") || "{}");
   var nextStatus = ((clockData[u] && clockData[u].status) || "Out") === "In" ? "Out" : "In";
+  
+  // Update last-status state
   clockData[u] = { status: nextStatus, time: time };
   localStorage.setItem("clock", JSON.stringify(clockData));
+  
+  // Track detailed attendance logs in localStorage
+  var logsKey = "attendance_logs_" + u;
+  var logs = JSON.parse(localStorage.getItem(logsKey) || "[]");
+  
+  if (nextStatus === "In") {
+    // Clocking in: create a new session
+    var newSession = {
+      date: dateStr,
+      clockIn: time,
+      clockOut: null,
+      rawIn: Date.now(),
+      rawOut: null,
+      duration: null
+    };
+    logs.push(newSession);
+  } else {
+    // Clocking out: locate the active session and close it
+    var activeSession = logs.find(log => log.clockOut === null);
+    if (activeSession) {
+      activeSession.clockOut = time;
+      activeSession.rawOut = Date.now();
+      activeSession.duration = activeSession.rawOut - activeSession.rawIn;
+    } else {
+      // Fallback in case of mismatch
+      logs.push({
+        date: dateStr,
+        clockIn: time,
+        clockOut: time,
+        rawIn: Date.now(),
+        rawOut: Date.now(),
+        duration: 0
+      });
+    }
+  }
+  localStorage.setItem(logsKey, JSON.stringify(logs));
+  
   if (document.getElementById("greeting-overlay").hidden === true) {
     alert("You clocked " + nextStatus + " successfully at " + time + "!");
   }
+  
   updateClockUI(u);
+  updateAttendanceStats(u);
 }
 
 function handleHeaderClockToggle() {
@@ -183,13 +227,126 @@ function updateClockUI(username) {
   var clock = JSON.parse(localStorage.getItem("clock") || "{}")[username] || { status: "Out", time: "None" };
   
   var statusEl = document.getElementById("clock-status");
-  statusEl.textContent = "Clocked " + clock.status + " at " + clock.time;
-  statusEl.style.color = clock.status === "In" ? "green" : "red";
-  document.getElementById("clock-toggle-btn").textContent = clock.status === "In" ? "Clock Out" : "Clock In";
+  if (statusEl) {
+    statusEl.textContent = "Clocked " + clock.status + " at " + clock.time;
+    statusEl.style.color = clock.status === "In" ? "var(--success-color)" : "var(--danger-color)";
+  }
   
-  document.getElementById("header-clock-status").textContent = "Clocked " + clock.status;
-  document.getElementById("header-clock-status").className = "status-indicator " + (clock.status === "In" ? "clocked-in" : "clocked-out");
-  document.getElementById("header-clock-btn").textContent = clock.status === "In" ? "Clock Out" : "Clock In";
+  var toggleBtn = document.getElementById("clock-toggle-btn");
+  if (toggleBtn) {
+    toggleBtn.textContent = clock.status === "In" ? "Clock Out" : "Clock In";
+    toggleBtn.className = clock.status === "In" ? "btn-primary clocked-in" : "btn-primary clocked-out";
+  }
+  
+  var headerStatus = document.getElementById("header-clock-status");
+  if (headerStatus) {
+    headerStatus.textContent = "Clocked " + clock.status;
+    headerStatus.className = "status-indicator " + (clock.status === "In" ? "clocked-in" : "clocked-out");
+  }
+  
+  var headerBtn = document.getElementById("header-clock-btn");
+  if (headerBtn) {
+    headerBtn.textContent = clock.status === "In" ? "Clock Out" : "Clock In";
+  }
+}
+
+function formatDuration(ms) {
+  var s = Math.floor(ms / 1000);
+  var hours = Math.floor(s / 3600);
+  var minutes = Math.floor((s % 3600) / 60);
+  var seconds = s % 60;
+  var pad = (n) => n < 10 ? "0" + n : n;
+  return pad(hours) + "h " + pad(minutes) + "m " + pad(seconds) + "s";
+}
+
+function updateAttendanceStats(username) {
+  if (!username) return;
+  
+  var logsKey = "attendance_logs_" + username;
+  var logs = JSON.parse(localStorage.getItem(logsKey) || "[]");
+  var todayStr = new Date().toLocaleDateString("en-CA");
+  
+  // Find active running session across all logs (even if logged before midnight)
+  var activeSession = logs.find(log => log.clockOut === null);
+  var isClockedIn = !!activeSession;
+  
+  // Filter sessions that occurred today OR are currently active (spans midnight)
+  var todayLogs = logs.filter(log => log.date === todayStr || log === activeSession);
+  
+  var firstIn = "--:--";
+  var lastOut = "--:--";
+  var totalWorkMs = 0;
+  
+  if (todayLogs.length > 0) {
+    firstIn = todayLogs[0].clockIn;
+    
+    for (var i = 0; i < todayLogs.length; i++) {
+      var log = todayLogs[i];
+      if (log.clockOut) {
+        totalWorkMs += log.duration;
+        lastOut = log.clockOut;
+      } else {
+        // Active running session: calculate elapsed time live
+        totalWorkMs += (Date.now() - log.rawIn);
+      }
+    }
+  }
+  
+  // Update attendance widgets in dashboard
+  var statsStatus = document.getElementById("stats-status");
+  if (statsStatus) {
+    statsStatus.textContent = isClockedIn ? "Clocked In" : "Clocked Out";
+    statsStatus.className = "stat-value " + (isClockedIn ? "clocked-in" : "clocked-out");
+  }
+  
+  var statsFirstIn = document.getElementById("stats-first-in");
+  if (statsFirstIn) statsFirstIn.textContent = firstIn;
+  
+  var statsLastOut = document.getElementById("stats-last-out");
+  if (statsLastOut) statsLastOut.textContent = lastOut;
+  
+  var statsWork = document.getElementById("stats-work-hours");
+  if (statsWork) statsWork.textContent = formatDuration(totalWorkMs);
+  
+  // Daily Target calculation (8 Hours = 28,800,000 ms)
+  var targetMs = 8 * 60 * 60 * 1000;
+  var percentage = Math.min(100, Math.floor((totalWorkMs / targetMs) * 100));
+  var hoursRaw = (totalWorkMs / (3600 * 1000)).toFixed(2);
+  
+  var goalPerc = document.getElementById("goal-percentage");
+  if (goalPerc) goalPerc.textContent = percentage + "% (" + hoursRaw + " / 8 hrs)";
+  
+  var progressFill = document.getElementById("goal-progress-fill");
+  if (progressFill) progressFill.style.width = percentage + "%";
+  
+  // Render Attendance Table logs
+  var tbody = document.getElementById("attendanceLogsBody");
+  var noLogsMsg = document.getElementById("noAttendanceLogs");
+  
+  if (tbody) {
+    tbody.innerHTML = "";
+    if (todayLogs.length === 0) {
+      if (noLogsMsg) noLogsMsg.style.display = "block";
+    } else {
+      if (noLogsMsg) noLogsMsg.style.display = "none";
+      
+      for (var j = 0; j < todayLogs.length; j++) {
+        var item = todayLogs[j];
+        var durationText = item.duration ? formatDuration(item.duration) : "Running...";
+        var outText = item.clockOut ? item.clockOut : "Active";
+        var statusBadgeClass = item.clockOut ? "badge active" : "badge on-leave"; // green for completed, amber for active
+        var statusLabel = item.clockOut ? "Completed" : "Active";
+        
+        var tr = document.createElement("tr");
+        tr.innerHTML = 
+          "<td>" + item.clockIn + "</td>" +
+          "<td>" + outText + "</td>" +
+          "<td>" + durationText + "</td>" +
+          "<td><span class='" + statusBadgeClass + "'>" + statusLabel + "</span></td>";
+        tbody.appendChild(tr);
+      }
+    }
+  }
 }
 
 function closeGreeting() {
