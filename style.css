@@ -658,6 +658,11 @@ tbody td {
   color: #333;
 }
 
+/* Generic fallback hover – must come BEFORE the specific overrides below */
+.btn:hover {
+  background: #e9ecef;
+}
+
 .btn.start {
   background: #28a745;
   color: #fff;
@@ -676,10 +681,6 @@ tbody td {
 
 .btn.stop:hover {
   background: #b02a37;
-}
-
-.btn:hover {
-  background: #e9ecef;
 }
 
 .laps-container {

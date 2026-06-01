@@ -1,58 +1,84 @@
 var employees = [
-  { id: "EMP101", name: "Arun", dob: "1999-02-15", gender: "Male", department: "Software Development", role: "Frontend Developer", email: "arun@example.com", status: "Present" },
-  { id: "EMP102", name: "Priya", dob: "1998-07-22", gender: "Female", department: "Web Development", role: "UI/UX Designer", email: "priya@example.com", status: "Present" },
-  { id: "EMP103", name: "Karthik", dob: "1997-11-10", gender: "Male", department: "Cyber Security", role: "Security Analyst", email: "karthik@example.com", status: "Present" },
-  { id: "EMP104", name: "Divya", dob: "2000-04-03", gender: "Female", department: "Data Science", role: "Data Analyst", email: "divya@example.com", status: "Present" },
-  { id: "EMP105", name: "Surya", dob: "1996-09-18", gender: "Male", department: "Cloud Computing", role: "Cloud Engineer", email: "surya@example.com", status: "On Permission" },
-  { id: "EMP106", name: "Keerthi", dob: "1999-01-27", gender: "Female", department: "Artificial Intelligence", role: "ML Engineer", email: "keerthi@example.com", status: "Present" },
-  { id: "EMP107", name: "Vignesh", dob: "1998-06-05", gender: "Male", department: "IT Support", role: "System Administrator", email: "vignesh@example.com", status: "Present" },
-  { id: "EMP108", name: "Nisha", dob: "2001-12-14", gender: "Female", department: "Mobile App Development", role: "Android Developer", email: "nisha@example.com", status: "Present" },
-  { id: "EMP109", name: "Hari", dob: "1997-08-29", gender: "Male", department: "DevOps", role: "DevOps Engineer", email: "hari@example.com", status: "On Leave" },
-  { id: "EMP110", name: "Aishwarya", dob: "2000-03-11", gender: "Female", department: "Database Management", role: "Database Administrator", email: "aishwarya@example.com", status: "Present" }
+  { id: "EMP101", name: "Arun",      dob: "1999-02-15", gender: "Male",   department: "Software Development",    role: "Frontend Developer",      email: "arun@example.com",      status: "Present" },
+  { id: "EMP102", name: "Priya",     dob: "1998-07-22", gender: "Female", department: "Web Development",         role: "UI/UX Designer",          email: "priya@example.com",     status: "Present" },
+  { id: "EMP103", name: "Karthik",   dob: "1997-11-10", gender: "Male",   department: "Cyber Security",          role: "Security Analyst",        email: "karthik@example.com",   status: "Present" },
+  { id: "EMP104", name: "Divya",     dob: "2000-04-03", gender: "Female", department: "Data Science",            role: "Data Analyst",            email: "divya@example.com",     status: "Present" },
+  { id: "EMP105", name: "Surya",     dob: "1996-09-18", gender: "Male",   department: "Cloud Computing",         role: "Cloud Engineer",          email: "surya@example.com",     status: "On Permission" },
+  { id: "EMP106", name: "Keerthi",   dob: "1999-01-27", gender: "Female", department: "Artificial Intelligence", role: "ML Engineer",             email: "keerthi@example.com",   status: "Present" },
+  { id: "EMP107", name: "Vignesh",   dob: "1998-06-05", gender: "Male",   department: "IT Support",              role: "System Administrator",    email: "vignesh@example.com",   status: "Present" },
+  { id: "EMP108", name: "Nisha",     dob: "2001-12-14", gender: "Female", department: "Mobile App Development",  role: "Android Developer",       email: "nisha@example.com",     status: "Present" },
+  { id: "EMP109", name: "Hari",      dob: "1997-08-29", gender: "Male",   department: "DevOps",                  role: "DevOps Engineer",         email: "hari@example.com",      status: "On Leave" },
+  { id: "EMP110", name: "Aishwarya", dob: "2000-03-11", gender: "Female", department: "Database Management",     role: "Database Administrator",  email: "aishwarya@example.com", status: "Present" }
 ];
 
-var clockTimer = null, timerId = null, isRunning = false, startTime = 0, accumulatedTime = 0, lapCounter = 0, laps = [];
+// ── Stopwatch state ────────────────────────────────────────────────────────────
+var clockTimer       = null;   // interval for the greeting clock display
+var timerId          = null;   // interval for the stopwatch tick
+var isRunning        = false;
+var startTime        = 0;
+var accumulatedTime  = 0;
+var lapCounter       = 0;
+var laps             = [];
 
+// ── BUG FIX #1: declare attendanceInterval at the top so it is always defined ─
+var attendanceInterval = null;
+
+// ── App boot ──────────────────────────────────────────────────────────────────
 window.onload = function () {
+  // Seed a default account if none exist
   var users = JSON.parse(localStorage.getItem("users") || "{}");
   if (Object.keys(users).length === 0) {
     users["hilife"] = {
       firstName: "HiLife",
-      lastName: "User",
-      email: "user@hilife.ai",
-      password: "password123"
+      lastName:  "User",
+      email:     "user@hilife.ai",
+      password:  "password123"
     };
     localStorage.setItem("users", JSON.stringify(users));
   }
 
+  // Restore "Remember me" username
   var rem = localStorage.getItem("rememberedUsername");
   if (rem) {
     document.getElementById("signin-username").value = rem;
     document.getElementById("signin-remember").checked = true;
   }
+
+  // Auto-login if a session exists
   var currentUser = localStorage.getItem("currentUser");
   if (currentUser) {
-    var users = JSON.parse(localStorage.getItem("users") || "{}");
-    if (users[currentUser]) showDashboard(currentUser, users[currentUser].firstName + " " + users[currentUser].lastName);
-    else showLoginScreen();
+    // BUG FIX #2: use a fresh variable name, not re-declare 'users'
+    var storedUsers = JSON.parse(localStorage.getItem("users") || "{}");
+    if (storedUsers[currentUser]) {
+      showDashboard(currentUser, storedUsers[currentUser].firstName + " " + storedUsers[currentUser].lastName);
+    } else {
+      showLoginScreen();
+    }
   } else {
     showLoginScreen();
   }
-  document.getElementById("searchName").addEventListener("input", applyFilters);
+
+  // Filter event listeners
+  document.getElementById("searchName").addEventListener("input",  applyFilters);
   document.getElementById("filterDept").addEventListener("change", applyFilters);
   document.getElementById("filterRole").addEventListener("change", applyFilters);
   document.getElementById("filterGender").addEventListener("change", applyFilters);
   document.getElementById("filterStatus").addEventListener("change", applyFilters);
-  document.getElementById("clearBtn").addEventListener("click", clearFilters);
+  document.getElementById("clearBtn").addEventListener("click",    clearFilters);
+
+  // Stopwatch event listeners
   document.getElementById("startStopBtn").addEventListener("click", toggleStopwatch);
-  document.getElementById("lapBtn").addEventListener("click", addStopwatchLap);
-  document.getElementById("resetBtn").addEventListener("click", resetStopwatch);
+  document.getElementById("lapBtn").addEventListener("click",       addStopwatchLap);
+  document.getElementById("resetBtn").addEventListener("click",     resetStopwatch);
 };
 
+// ── Screen helpers ────────────────────────────────────────────────────────────
 function showLoginScreen() {
   document.getElementById("login-screen").classList.remove("hidden");
   document.getElementById("dashboard-screen").classList.add("hidden");
   document.getElementById("greeting-overlay").hidden = true;
+
+  // Stop the live-stats interval when leaving the dashboard
   if (attendanceInterval) {
     clearInterval(attendanceInterval);
     attendanceInterval = null;
@@ -63,17 +89,27 @@ function showDashboard(username, fullName) {
   document.getElementById("login-screen").classList.add("hidden");
   document.getElementById("dashboard-screen").classList.remove("hidden");
   document.getElementById("user-greeting").textContent = "Hello, " + fullName;
+
   updateClockUI(username);
   updateAttendanceStats(username);
-  
+
+  // BUG FIX #3: start a live-updating interval so the "Total Work Today"
+  //             counter ticks in real time while the user is clocked in.
+  if (attendanceInterval) clearInterval(attendanceInterval);
+  attendanceInterval = setInterval(function () {
+    var u = localStorage.getItem("currentUser");
+    if (u) updateAttendanceStats(u);
+  }, 1000);
+
   var savedTab = localStorage.getItem("active_tab_" + username) || "directory";
   switchDashboardTab(savedTab);
 }
 
+// ── Tab switching ─────────────────────────────────────────────────────────────
 function switchLoginTab(tab) {
   var isSign = tab === "signin";
-  document.getElementById("tab-signin").classList.toggle("active", isSign);
-  document.getElementById("tab-signup").classList.toggle("active", !isSign);
+  document.getElementById("tab-signin").classList.toggle("active",  isSign);
+  document.getElementById("tab-signup").classList.toggle("active",  !isSign);
   document.getElementById("panel-signin").classList.toggle("active", isSign);
   document.getElementById("panel-signup").classList.toggle("active", !isSign);
 }
@@ -81,13 +117,14 @@ function switchLoginTab(tab) {
 function switchDashboardTab(tab) {
   var isDirectory = tab === "directory";
   var currentUser = localStorage.getItem("currentUser") || "hilife";
-  
+
   localStorage.setItem("active_tab_" + currentUser, tab);
-  
+
   document.getElementById("tab-btn-directory").classList.toggle("active", isDirectory);
-  document.getElementById("tab-btn-timer").classList.toggle("active", !isDirectory);
-  document.getElementById("directory-tab").classList.toggle("active", isDirectory);
-  document.getElementById("timer-tab").classList.toggle("active", !isDirectory);
+  document.getElementById("tab-btn-timer").classList.toggle("active",     !isDirectory);
+  document.getElementById("directory-tab").classList.toggle("active",     isDirectory);
+  document.getElementById("timer-tab").classList.toggle("active",         !isDirectory);
+
   if (isDirectory) {
     showTable(employees);
     clearFilters();
@@ -97,147 +134,151 @@ function switchDashboardTab(tab) {
   }
 }
 
+// ── Password toggle ───────────────────────────────────────────────────────────
 function togglePassword(inputId, btn) {
   var input = document.getElementById(inputId);
   input.type = input.type === "password" ? "text" : "password";
   btn.textContent = input.type === "password" ? "Show" : "Hide";
 }
 
+// ── Auth ──────────────────────────────────────────────────────────────────────
 function handleSignIn(e) {
   e.preventDefault();
   var u = document.getElementById("signin-username").value.trim();
   var p = document.getElementById("signin-password").value;
-  if (!u || !p) return alert("Fill all fields");
+  if (!u || !p) return alert("Please fill in all fields.");
   var users = JSON.parse(localStorage.getItem("users") || "{}");
-  if (!users[u] || users[u].password !== p) return alert("Invalid credentials");
-  if (document.getElementById("signin-remember").checked) localStorage.setItem("rememberedUsername", u);
-  else localStorage.removeItem("rememberedUsername");
+  if (!users[u] || users[u].password !== p) return alert("Invalid username or password.");
+  if (document.getElementById("signin-remember").checked) {
+    localStorage.setItem("rememberedUsername", u);
+  } else {
+    localStorage.removeItem("rememberedUsername");
+  }
   localStorage.setItem("currentUser", u);
   showGreeting(u, users[u].firstName + " " + users[u].lastName);
-
-  // Clear inputs
   document.getElementById("signin-username").value = "";
   document.getElementById("signin-password").value = "";
 }
 
 function handleSignUp(e) {
   e.preventDefault();
-  var f = document.getElementById("signup-firstname").value.trim();
-  var l = document.getElementById("signup-lastname").value.trim();
-  var u = document.getElementById("signup-username").value.trim();
+  var f  = document.getElementById("signup-firstname").value.trim();
+  var l  = document.getElementById("signup-lastname").value.trim();
+  var u  = document.getElementById("signup-username").value.trim();
   var em = document.getElementById("signup-email").value.trim();
-  var p = document.getElementById("signup-password").value;
-  var c = document.getElementById("signup-confirm").value;
-  if (!f || !l || !u || !em || !p || !c) return alert("Fill all fields");
-  if (p.length < 6) return alert("Password min 6 chars");
-  if (p !== c) return alert("Passwords do not match");
+  var p  = document.getElementById("signup-password").value;
+  var c  = document.getElementById("signup-confirm").value;
+  if (!f || !l || !u || !em || !p || !c) return alert("Please fill in all fields.");
+  if (p.length < 6)  return alert("Password must be at least 6 characters.");
+  if (p !== c)       return alert("Passwords do not match.");
   var users = JSON.parse(localStorage.getItem("users") || "{}");
-  if (users[u]) return alert("Username taken");
+  if (users[u])      return alert("Username is already taken.");
   users[u] = { firstName: f, lastName: l, email: em, password: p };
   localStorage.setItem("users", JSON.stringify(users));
   localStorage.setItem("currentUser", u);
   showGreeting(u, f + " " + l);
-
-  // Clear inputs
-  document.getElementById("signup-firstname").value = "";
-  document.getElementById("signup-lastname").value = "";
-  document.getElementById("signup-username").value = "";
-  document.getElementById("signup-email").value = "";
-  document.getElementById("signup-password").value = "";
-  document.getElementById("signup-confirm").value = "";
+  ["signup-firstname","signup-lastname","signup-username","signup-email","signup-password","signup-confirm"]
+    .forEach(function (id) { document.getElementById(id).value = ""; });
 }
 
 function handleSignOut() {
+  // Stop the stopwatch if running
   if (isRunning) {
     clearInterval(timerId);
     isRunning = false;
     saveStopwatchState();
   }
+  // Stop the live-stats interval
   if (attendanceInterval) {
     clearInterval(attendanceInterval);
     attendanceInterval = null;
   }
-  
   var currentUser = localStorage.getItem("currentUser");
-  if (currentUser) {
-    localStorage.removeItem("active_tab_" + currentUser);
-  }
-  
+  if (currentUser) localStorage.removeItem("active_tab_" + currentUser);
   localStorage.removeItem("currentUser");
   showLoginScreen();
 }
 
 function forgotPassword() {
   var u = document.getElementById("signin-username").value.trim();
-  if (!u) return alert("Enter username first");
+  if (!u) return alert("Please enter your username first.");
   var users = JSON.parse(localStorage.getItem("users") || "{}");
-  if (!users[u]) return alert("No account found");
-  alert("Reset link sent to: " + users[u].email);
+  if (!users[u]) return alert("No account found with that username.");
+  alert("Password reset link sent to: " + users[u].email);
 }
 
+// ── Greeting overlay ──────────────────────────────────────────────────────────
 function showGreeting(username, name) {
   document.getElementById("greeting-name").textContent = name;
   var timeEl = document.getElementById("greeting-time");
   if (clockTimer) clearInterval(clockTimer);
-  clockTimer = setInterval(() => timeEl.textContent = new Date().toLocaleTimeString("en-IN"), 1000);
+  clockTimer = setInterval(function () {
+    timeEl.textContent = new Date().toLocaleTimeString("en-IN");
+  }, 1000);
   timeEl.textContent = new Date().toLocaleTimeString("en-IN");
   document.getElementById("greeting-overlay").hidden = false;
   updateClockUI(username);
 }
 
+function closeGreeting() {
+  document.getElementById("greeting-overlay").hidden = true;
+  if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+  var currentUser = localStorage.getItem("currentUser");
+  var users = JSON.parse(localStorage.getItem("users") || "{}");
+  if (currentUser && users[currentUser]) {
+    showDashboard(currentUser, users[currentUser].firstName + " " + users[currentUser].lastName);
+  }
+}
+
+// ── Clock In / Out ────────────────────────────────────────────────────────────
 function handleClockToggle() {
-  var u = localStorage.getItem("currentUser") || document.getElementById("greeting-overlay").getAttribute("data-user");
+  var u = localStorage.getItem("currentUser");
   if (!u) return;
-  
-  var time = new Date().toLocaleTimeString("en-IN");
+
+  var time    = new Date().toLocaleTimeString("en-IN");
   var dateStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
-  var clockData = JSON.parse(localStorage.getItem("clock") || "{}");
-  var nextStatus = ((clockData[u] && clockData[u].status) || "Out") === "In" ? "Out" : "In";
-  
-  // Update last-status state
+
+  var clockData  = JSON.parse(localStorage.getItem("clock") || "{}");
+  var currentStatus = (clockData[u] && clockData[u].status) || "Out";
+  var nextStatus = currentStatus === "In" ? "Out" : "In";
+
   clockData[u] = { status: nextStatus, time: time };
   localStorage.setItem("clock", JSON.stringify(clockData));
-  
-  // Track detailed attendance logs in localStorage
+
   var logsKey = "attendance_logs_" + u;
   var logs = JSON.parse(localStorage.getItem(logsKey) || "[]");
-  
+
   if (nextStatus === "In") {
-    // Clocking in: create a new session
-    var newSession = {
-      date: dateStr,
-      clockIn: time,
+    logs.push({
+      date:     dateStr,
+      clockIn:  time,
       clockOut: null,
-      rawIn: Date.now(),
-      rawOut: null,
+      rawIn:    Date.now(),
+      rawOut:   null,
       duration: null
-    };
-    logs.push(newSession);
+    });
   } else {
-    // Clocking out: locate the active session and close it
-    var activeSession = logs.find(log => log.clockOut === null);
+    var activeSession = null;
+    for (var i = 0; i < logs.length; i++) {
+      if (logs[i].clockOut === null) { activeSession = logs[i]; break; }
+    }
     if (activeSession) {
       activeSession.clockOut = time;
-      activeSession.rawOut = Date.now();
+      activeSession.rawOut   = Date.now();
       activeSession.duration = activeSession.rawOut - activeSession.rawIn;
     } else {
-      // Fallback in case of mismatch
-      logs.push({
-        date: dateStr,
-        clockIn: time,
-        clockOut: time,
-        rawIn: Date.now(),
-        rawOut: Date.now(),
-        duration: 0
-      });
+      // Safety fallback: should not normally happen
+      logs.push({ date: dateStr, clockIn: time, clockOut: time,
+                  rawIn: Date.now(), rawOut: Date.now(), duration: 0 });
     }
   }
   localStorage.setItem(logsKey, JSON.stringify(logs));
-  
+
+  // Show confirmation only when the popup is not visible
   if (document.getElementById("greeting-overlay").hidden === true) {
     alert("You clocked " + nextStatus + " successfully at " + time + "!");
   }
-  
+
   updateClockUI(u);
   updateAttendanceStats(u);
 }
@@ -246,147 +287,148 @@ function handleHeaderClockToggle() {
   handleClockToggle();
 }
 
+// ── BUG FIX #4: updateClockUI – replace missing CSS vars with real hex colors ─
 function updateClockUI(username) {
-  var clock = JSON.parse(localStorage.getItem("clock") || "{}")[username] || { status: "Out", time: "None" };
-  
+  var clock = (JSON.parse(localStorage.getItem("clock") || "{}")[username]) || { status: "Out", time: "None" };
+  var isClockedIn = clock.status === "In";
+
   var statusEl = document.getElementById("clock-status");
   if (statusEl) {
     statusEl.textContent = "Clocked " + clock.status + " at " + clock.time;
-    statusEl.style.color = clock.status === "In" ? "var(--success-color)" : "var(--danger-color)";
+    // BUG FIX: was using var(--success-color) / var(--danger-color) which don't exist
+    statusEl.style.color = isClockedIn ? "#28a745" : "#dc3545";
   }
-  
+
   var toggleBtn = document.getElementById("clock-toggle-btn");
   if (toggleBtn) {
-    toggleBtn.textContent = clock.status === "In" ? "Clock Out" : "Clock In";
-    toggleBtn.className = clock.status === "In" ? "btn-primary clocked-in" : "btn-primary clocked-out";
+    toggleBtn.textContent = isClockedIn ? "Clock Out" : "Clock In";
+    toggleBtn.className   = isClockedIn ? "btn-primary clocked-in" : "btn-primary clocked-out";
   }
-  
+
   var headerStatus = document.getElementById("header-clock-status");
   if (headerStatus) {
     headerStatus.textContent = "Clocked " + clock.status;
-    headerStatus.className = "status-indicator " + (clock.status === "In" ? "clocked-in" : "clocked-out");
+    headerStatus.className   = "status-indicator " + (isClockedIn ? "clocked-in" : "clocked-out");
   }
-  
+
   var headerBtn = document.getElementById("header-clock-btn");
   if (headerBtn) {
-    headerBtn.textContent = clock.status === "In" ? "Clock Out" : "Clock In";
+    headerBtn.textContent = isClockedIn ? "Clock Out" : "Clock In";
   }
 }
 
+// ── Attendance stats ──────────────────────────────────────────────────────────
 function formatDuration(ms) {
-  var s = Math.floor(ms / 1000);
-  var hours = Math.floor(s / 3600);
+  if (!ms || ms < 0) return "00h 00m 00s";
+  var s       = Math.floor(ms / 1000);
+  var hours   = Math.floor(s / 3600);
   var minutes = Math.floor((s % 3600) / 60);
   var seconds = s % 60;
-  var pad = (n) => n < 10 ? "0" + n : n;
+  var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
   return pad(hours) + "h " + pad(minutes) + "m " + pad(seconds) + "s";
 }
 
 function updateAttendanceStats(username) {
   if (!username) return;
-  
-  var logsKey = "attendance_logs_" + username;
-  var logs = JSON.parse(localStorage.getItem(logsKey) || "[]");
+
+  var logsKey  = "attendance_logs_" + username;
+  var logs     = JSON.parse(localStorage.getItem(logsKey) || "[]");
   var todayStr = new Date().toLocaleDateString("en-CA");
-  
-  // Find active running session across all logs (even if logged before midnight)
-  var activeSession = logs.find(log => log.clockOut === null);
+
+  // Find any currently-active (open) session
+  var activeSession = null;
+  for (var k = 0; k < logs.length; k++) {
+    if (logs[k].clockOut === null) { activeSession = logs[k]; break; }
+  }
   var isClockedIn = !!activeSession;
-  
-  // Filter sessions that occurred today OR are currently active (spans midnight)
-  var todayLogs = logs.filter(log => log.date === todayStr || log === activeSession);
-  
-  var firstIn = "--:--";
-  var lastOut = "--:--";
-  var totalWorkMs = 0;
-  
+
+  // Sessions that belong to today OR the ongoing cross-midnight session
+  var todayLogs = [];
+  for (var i = 0; i < logs.length; i++) {
+    if (logs[i].date === todayStr || logs[i] === activeSession) todayLogs.push(logs[i]);
+  }
+
+  var firstIn      = "--:--";
+  var lastOut      = "--:--";
+  var totalWorkMs  = 0;
+
   if (todayLogs.length > 0) {
     firstIn = todayLogs[0].clockIn;
-    
-    for (var i = 0; i < todayLogs.length; i++) {
-      var log = todayLogs[i];
+    for (var j = 0; j < todayLogs.length; j++) {
+      var log = todayLogs[j];
       if (log.clockOut) {
         totalWorkMs += log.duration;
-        lastOut = log.clockOut;
+        lastOut      = log.clockOut;
       } else {
-        // Active running session: calculate elapsed time live
+        // Active session: count elapsed time right now
         totalWorkMs += (Date.now() - log.rawIn);
       }
     }
   }
-  
-  // Update attendance widgets in dashboard
+
+  // Status widget
   var statsStatus = document.getElementById("stats-status");
   if (statsStatus) {
     statsStatus.textContent = isClockedIn ? "Clocked In" : "Clocked Out";
-    statsStatus.className = "stat-value " + (isClockedIn ? "clocked-in" : "clocked-out");
+    statsStatus.className   = "stat-value " + (isClockedIn ? "clocked-in" : "clocked-out");
   }
-  
+
   var statsFirstIn = document.getElementById("stats-first-in");
   if (statsFirstIn) statsFirstIn.textContent = firstIn;
-  
+
   var statsLastOut = document.getElementById("stats-last-out");
   if (statsLastOut) statsLastOut.textContent = lastOut;
-  
+
   var statsWork = document.getElementById("stats-work-hours");
   if (statsWork) statsWork.textContent = formatDuration(totalWorkMs);
-  
-  // Daily Target calculation (8 Hours = 28,800,000 ms)
-  var targetMs = 8 * 60 * 60 * 1000;
-  var percentage = Math.min(100, Math.floor((totalWorkMs / targetMs) * 100));
-  var hoursRaw = (totalWorkMs / (3600 * 1000)).toFixed(2);
-  
+
+  // Daily goal (8 hours = 28 800 000 ms)
+  var targetMs    = 8 * 60 * 60 * 1000;
+  var percentage  = Math.min(100, Math.floor((totalWorkMs / targetMs) * 100));
+  var hoursRaw    = (totalWorkMs / (3600 * 1000)).toFixed(2);
+
   var goalPerc = document.getElementById("goal-percentage");
   if (goalPerc) goalPerc.textContent = percentage + "% (" + hoursRaw + " / 8 hrs)";
-  
+
   var progressFill = document.getElementById("goal-progress-fill");
   if (progressFill) progressFill.style.width = percentage + "%";
-  
-  // Render Attendance Table logs
-  var tbody = document.getElementById("attendanceLogsBody");
+
+  // Attendance log table
+  var tbody     = document.getElementById("attendanceLogsBody");
   var noLogsMsg = document.getElementById("noAttendanceLogs");
-  
+
   if (tbody) {
     tbody.innerHTML = "";
     if (todayLogs.length === 0) {
       if (noLogsMsg) noLogsMsg.style.display = "block";
     } else {
       if (noLogsMsg) noLogsMsg.style.display = "none";
-      
-      for (var j = 0; j < todayLogs.length; j++) {
-        var item = todayLogs[j];
-        var durationText = item.duration ? formatDuration(item.duration) : "Running...";
-        var outText = item.clockOut ? item.clockOut : "Active";
-        var statusBadgeClass = item.clockOut ? "badge active" : "badge on-leave"; // green for completed, amber for active
-        var statusLabel = item.clockOut ? "Completed" : "Active";
-        
+      for (var m = 0; m < todayLogs.length; m++) {
+        var item = todayLogs[m];
+        // BUG FIX #5: live-calculate duration for the active row
+        var rowDuration    = item.clockOut ? formatDuration(item.duration) : formatDuration(Date.now() - item.rawIn);
+        var outText        = item.clockOut ? item.clockOut : "Active";
+        var badgeClass     = item.clockOut ? "badge active" : "badge on-leave";
+        var statusLabel    = item.clockOut ? "Completed"   : "Active";
+
         var tr = document.createElement("tr");
-        tr.innerHTML = 
-          "<td>" + item.clockIn + "</td>" +
-          "<td>" + outText + "</td>" +
-          "<td>" + durationText + "</td>" +
-          "<td><span class='" + statusBadgeClass + "'>" + statusLabel + "</span></td>";
+        tr.innerHTML =
+          "<td>" + item.clockIn  + "</td>" +
+          "<td>" + outText       + "</td>" +
+          "<td>" + rowDuration   + "</td>" +
+          "<td><span class='" + badgeClass + "'>" + statusLabel + "</span></td>";
         tbody.appendChild(tr);
       }
     }
   }
 }
 
-function closeGreeting() {
-  document.getElementById("greeting-overlay").hidden = true;
-  if (clockTimer) clearInterval(clockTimer);
-  var currentUser = localStorage.getItem("currentUser");
-  var users = JSON.parse(localStorage.getItem("users") || "{}");
-  if (currentUser && users[currentUser]) {
-    showDashboard(currentUser, users[currentUser].firstName + " " + users[currentUser].lastName);
-  }
-}
-
+// ── Employee directory ────────────────────────────────────────────────────────
 function calculateAge(dob) {
-  var today = new Date();
+  var today     = new Date();
   var birthDate = new Date(dob);
   var age = today.getFullYear() - birthDate.getFullYear();
-  var m = today.getMonth() - birthDate.getMonth();
+  var m   = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
   return age;
 }
@@ -396,8 +438,13 @@ function buildTableRows(employeeList) {
   for (var i = 0; i < employeeList.length; i++) {
     var emp = employeeList[i];
     var formattedDOB = emp.dob.split("-").reverse().join("-");
-    var badgeClass = emp.status === "Present" ? "badge active" : emp.status === "On Leave" ? "badge on-leave" : "badge on-permission";
-    html += "<tr>" +
+    var badgeClass = emp.status === "Present"
+      ? "badge active"
+      : emp.status === "On Leave"
+        ? "badge on-leave"
+        : "badge on-permission";
+    html +=
+      "<tr>" +
       "<td>" + emp.id + "</td>" +
       "<td>" + emp.name + "</td>" +
       "<td>" + formattedDOB + "</td>" +
@@ -413,62 +460,66 @@ function buildTableRows(employeeList) {
 }
 
 function showTable(filteredList) {
-  document.getElementById("resultCount").textContent = filteredList.length;
-  document.getElementById("tableBody").innerHTML = buildTableRows(filteredList);
+  document.getElementById("resultCount").textContent    = filteredList.length;
+  document.getElementById("tableBody").innerHTML        = buildTableRows(filteredList);
   document.getElementById("noResult").classList.toggle("hidden", filteredList.length > 0);
 }
 
 function applyFilters() {
   var searchText = document.getElementById("searchName").value.toLowerCase().trim();
-  var dept = document.getElementById("filterDept").value;
-  var role = document.getElementById("filterRole").value;
-  var gender = document.getElementById("filterGender").value;
-  var status = document.getElementById("filterStatus").value;
-  var filtered = [];
+  var dept       = document.getElementById("filterDept").value;
+  var role       = document.getElementById("filterRole").value;
+  var gender     = document.getElementById("filterGender").value;
+  var status     = document.getElementById("filterStatus").value;
+  var filtered   = [];
   for (var i = 0; i < employees.length; i++) {
     var emp = employees[i];
-    var matchName = emp.name.toLowerCase().indexOf(searchText) !== -1 || emp.id.toLowerCase().indexOf(searchText) !== -1;
-    var matchDept = !dept || emp.department === dept;
-    var matchRole = !role || emp.role === role;
-    var matchGender = !gender || emp.gender === gender;
-    var matchStatus = !status || emp.status === status;
+    var matchName   = emp.name.toLowerCase().indexOf(searchText) !== -1 ||
+                      emp.id.toLowerCase().indexOf(searchText) !== -1;
+    var matchDept   = !dept   || emp.department === dept;
+    var matchRole   = !role   || emp.role       === role;
+    var matchGender = !gender || emp.gender     === gender;
+    var matchStatus = !status || emp.status     === status;
     if (matchName && matchDept && matchRole && matchGender && matchStatus) filtered.push(emp);
   }
   showTable(filtered);
 }
 
 function clearFilters() {
-  ["searchName", "filterDept", "filterRole", "filterGender", "filterStatus"].forEach(id => document.getElementById(id).value = "");
+  ["searchName","filterDept","filterRole","filterGender","filterStatus"].forEach(function (id) {
+    document.getElementById(id).value = "";
+  });
   showTable(employees);
 }
 
+// ── Stopwatch ─────────────────────────────────────────────────────────────────
 function getStopwatchKey(key) {
   return "stopwatch_" + (localStorage.getItem("currentUser") || "default") + "_" + key;
 }
 
 function formatTime(totalMs) {
-  var s = Math.floor(totalMs / 1000);
-  var pad = (n) => n < 10 ? "0" + n : n;
+  var s   = Math.floor(totalMs / 1000);
+  var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
   return pad(Math.floor(s / 3600)) + ":" + pad(Math.floor((s % 3600) / 60)) + ":" + pad(s % 60);
 }
 
 function tickStopwatch() {
-  document.getElementById("display").innerText = formatTime(accumulatedTime + (Date.now() - startTime));
+  document.getElementById("display").textContent = formatTime(accumulatedTime + (Date.now() - startTime));
 }
 
 function saveStopwatchState() {
-  localStorage.setItem(getStopwatchKey("isRunning"), isRunning);
-  localStorage.setItem(getStopwatchKey("startTime"), startTime);
+  localStorage.setItem(getStopwatchKey("isRunning"),       isRunning);
+  localStorage.setItem(getStopwatchKey("startTime"),       startTime);
   localStorage.setItem(getStopwatchKey("accumulatedTime"), accumulatedTime);
-  localStorage.setItem(getStopwatchKey("laps"), JSON.stringify(laps));
+  localStorage.setItem(getStopwatchKey("laps"),            JSON.stringify(laps));
 }
 
 function loadStopwatchState() {
-  if (timerId) clearInterval(timerId);
-  timerId = null;
-  laps = JSON.parse(localStorage.getItem(getStopwatchKey("laps"))) || [];
+  if (timerId) { clearInterval(timerId); timerId = null; }
+
+  laps       = JSON.parse(localStorage.getItem(getStopwatchKey("laps"))) || [];
   lapCounter = laps.length;
-  
+
   var lapsList = document.getElementById("lapsList");
   lapsList.innerHTML = "";
   for (var i = 0; i < laps.length; i++) {
@@ -476,41 +527,42 @@ function loadStopwatchState() {
     li.innerHTML = "<span>Lap " + (i + 1) + "</span><span>" + laps[i] + "</span>";
     lapsList.insertBefore(li, lapsList.firstChild);
   }
-  
-  isRunning = localStorage.getItem(getStopwatchKey("isRunning")) === "true";
-  startTime = parseInt(localStorage.getItem(getStopwatchKey("startTime"))) || 0;
-  accumulatedTime = parseInt(localStorage.getItem(getStopwatchKey("accumulatedTime"))) || 0;
-  
+
+  isRunning       = localStorage.getItem(getStopwatchKey("isRunning")) === "true";
+  startTime       = parseInt(localStorage.getItem(getStopwatchKey("startTime")),       10) || 0;
+  accumulatedTime = parseInt(localStorage.getItem(getStopwatchKey("accumulatedTime")), 10) || 0;
+
+  var btn         = document.getElementById("startStopBtn");
   var displayTime = accumulatedTime;
-  var btn = document.getElementById("startStopBtn");
+
   if (isRunning) {
     displayTime += Date.now() - startTime;
-    timerId = setInterval(tickStopwatch, 1000);
-    btn.innerText = "Stop";
-    btn.className = "btn stop";
+    timerId      = setInterval(tickStopwatch, 1000);
+    btn.textContent = "Stop";
+    btn.className   = "btn stop";
   } else {
-    btn.innerText = "Start";
-    btn.className = "btn start";
+    btn.textContent = "Start";
+    btn.className   = "btn start";
   }
-  document.getElementById("display").innerText = formatTime(displayTime);
+  document.getElementById("display").textContent = formatTime(displayTime);
 }
 
 function toggleStopwatch() {
   var btn = document.getElementById("startStopBtn");
-  if (isRunning === false) {
-    isRunning = true;
-    startTime = Date.now();
-    timerId = setInterval(tickStopwatch, 1000);
+  if (!isRunning) {
+    isRunning       = true;
+    startTime       = Date.now();
+    timerId         = setInterval(tickStopwatch, 1000);
     tickStopwatch();
-    btn.innerText = "Stop";
-    btn.className = "btn stop";
+    btn.textContent = "Stop";
+    btn.className   = "btn stop";
   } else {
-    isRunning = false;
+    isRunning       = false;
     clearInterval(timerId);
-    timerId = null;
+    timerId         = null;
     accumulatedTime += Date.now() - startTime;
-    btn.innerText = "Start";
-    btn.className = "btn start";
+    btn.textContent = "Start";
+    btn.className   = "btn start";
   }
   saveStopwatchState();
 }
@@ -529,16 +581,17 @@ function addStopwatchLap() {
 }
 
 function resetStopwatch() {
-  if (timerId) clearInterval(timerId);
-  timerId = null;
+  if (timerId) { clearInterval(timerId); timerId = null; }
   isRunning = false;
   startTime = accumulatedTime = lapCounter = 0;
-  laps = [];
-  
-  document.getElementById("display").innerText = "00:00:00";
-  document.getElementById("startStopBtn").innerText = "Start";
-  document.getElementById("startStopBtn").className = "btn start";
-  document.getElementById("lapsList").innerHTML = "";
-  
-  ["isRunning", "startTime", "accumulatedTime", "laps"].forEach(key => localStorage.removeItem(getStopwatchKey(key)));
+  laps      = [];
+
+  document.getElementById("display").textContent     = "00:00:00";
+  document.getElementById("startStopBtn").textContent = "Start";
+  document.getElementById("startStopBtn").className   = "btn start";
+  document.getElementById("lapsList").innerHTML        = "";
+
+  ["isRunning","startTime","accumulatedTime","laps"].forEach(function (key) {
+    localStorage.removeItem(getStopwatchKey(key));
+  });
 }
