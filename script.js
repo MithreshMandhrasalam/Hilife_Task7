@@ -152,6 +152,10 @@ function handleClockToggle() {
   updateClockUI(u);
 }
 
+function handleHeaderClockToggle() {
+  handleClockToggle();
+}
+
 function updateClockUI(username) {
   var clock = JSON.parse(localStorage.getItem("clock") || "{}")[username] || { status: "Out", time: "None" };
   
