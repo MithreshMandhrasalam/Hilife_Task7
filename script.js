@@ -101,6 +101,10 @@ function handleSignIn(e) {
   else localStorage.removeItem("rememberedUsername");
   localStorage.setItem("currentUser", u);
   showGreeting(u, users[u].firstName + " " + users[u].lastName);
+
+  // Clear inputs
+  document.getElementById("signin-username").value = "";
+  document.getElementById("signin-password").value = "";
 }
 
 function handleSignUp(e) {
@@ -120,6 +124,14 @@ function handleSignUp(e) {
   localStorage.setItem("users", JSON.stringify(users));
   localStorage.setItem("currentUser", u);
   showGreeting(u, f + " " + l);
+
+  // Clear inputs
+  document.getElementById("signup-firstname").value = "";
+  document.getElementById("signup-lastname").value = "";
+  document.getElementById("signup-username").value = "";
+  document.getElementById("signup-email").value = "";
+  document.getElementById("signup-password").value = "";
+  document.getElementById("signup-confirm").value = "";
 }
 
 function handleSignOut() {
