@@ -348,20 +348,95 @@
             </div>
           </div>
         </section>
+        <!-- WORK TIMER & ATTENDANCE DASHBOARD TAB -->
         <section id="timer-tab" class="tab-content-panel">
           <div class="section-header-title">
-            <h2>Work Timer</h2>
-            <p>Track your daily work hours and log laps</p>
+            <h2>Attendance & Work Timer</h2>
+            <p>Track shift attendance status, check-in history, and daily session stopwatches</p>
           </div>
-          <div class="stopwatch-container">
-            <div id="display">00:00:00</div>
-            <div class="controls">
-              <button id="startStopBtn" class="btn start">Start</button>
-              <button id="lapBtn" class="btn">Lap</button>
-              <button id="resetBtn" class="btn">Reset</button>
+          
+          <div class="timer-grid">
+            <!-- Left Side: Stopwatch -->
+            <div class="stopwatch-card">
+              <div class="card-header">
+                <h3>⏱️ Work Session Stopwatch</h3>
+              </div>
+              <div class="stopwatch-ring">
+                <div id="display">00:00:00</div>
+                <div class="stopwatch-label">SESSION TIME</div>
+              </div>
+              <div class="controls">
+                <button id="startStopBtn" class="btn start">Start</button>
+                <button id="lapBtn" class="btn lap-btn">Lap</button>
+                <button id="resetBtn" class="btn reset-btn">Reset</button>
+              </div>
+              <div class="laps-container">
+                <div class="laps-header">Session Laps</div>
+                <ul id="lapsList"></ul>
+              </div>
             </div>
-            <div class="laps-container">
-              <ul id="lapsList"></ul>
+
+            <!-- Right Side: Attendance Dashboard -->
+            <div class="attendance-stats-card">
+              <div class="card-header">
+                <h3>📊 Today's Attendance Stats</h3>
+              </div>
+              
+              <!-- Stats Row Grid -->
+              <div class="stats-row">
+                <div class="stat-widget">
+                  <div class="stat-label">Shift Status</div>
+                  <div class="stat-value" id="stats-status">Clocked Out</div>
+                </div>
+                <div class="stat-widget">
+                  <div class="stat-label">First Check-in</div>
+                  <div class="stat-value" id="stats-first-in">--:--</div>
+                </div>
+                <div class="stat-widget">
+                  <div class="stat-label">Last Check-out</div>
+                  <div class="stat-value" id="stats-last-out">--:--</div>
+                </div>
+                <div class="stat-widget">
+                  <div class="stat-label">Total Work Today</div>
+                  <div class="stat-value highlight" id="stats-work-hours">00h 00m 00s</div>
+                </div>
+              </div>
+
+              <!-- Daily Goal Progress -->
+              <div class="goal-widget">
+                <div class="goal-header">
+                  <span>Daily Target Progress</span>
+                  <span id="goal-percentage">0% (0.00 / 8 hrs)</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" id="goal-progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Attendance Logs List -->
+              <div class="logs-widget">
+                <div class="logs-header">
+                  <span>Attendance History (Today)</span>
+                </div>
+                <div class="attendance-table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="attendanceLogsBody">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                  <div id="noAttendanceLogs" class="no-logs">
+                    No clock-in records for today yet.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
