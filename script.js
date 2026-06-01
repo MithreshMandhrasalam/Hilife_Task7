@@ -298,6 +298,7 @@ function toggleStopwatch() {
     isRunning = true;
     startTime = Date.now();
     timerId = setInterval(tickStopwatch, 1000);
+    tickStopwatch();
     btn.innerText = "Stop";
     btn.className = "btn stop";
   } else {
