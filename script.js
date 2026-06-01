@@ -52,6 +52,11 @@ window.onload = function () {
 function showLoginScreen() {
   document.getElementById("login-screen").classList.remove("hidden");
   document.getElementById("dashboard-screen").classList.add("hidden");
+  document.getElementById("greeting-overlay").hidden = true;
+  if (attendanceInterval) {
+    clearInterval(attendanceInterval);
+    attendanceInterval = null;
+  }
 }
 
 function showDashboard(username, fullName) {
@@ -60,7 +65,9 @@ function showDashboard(username, fullName) {
   document.getElementById("user-greeting").textContent = "Hello, " + fullName;
   updateClockUI(username);
   updateAttendanceStats(username);
-  switchDashboardTab("directory");
+  
+  var savedTab = localStorage.getItem("active_tab_" + username) || "directory";
+  switchDashboardTab(savedTab);
 }
 
 function switchLoginTab(tab) {
@@ -74,6 +81,9 @@ function switchLoginTab(tab) {
 function switchDashboardTab(tab) {
   var isDirectory = tab === "directory";
   var currentUser = localStorage.getItem("currentUser") || "hilife";
+  
+  localStorage.setItem("active_tab_" + currentUser, tab);
+  
   document.getElementById("tab-btn-directory").classList.toggle("active", isDirectory);
   document.getElementById("tab-btn-timer").classList.toggle("active", !isDirectory);
   document.getElementById("directory-tab").classList.toggle("active", isDirectory);
@@ -143,6 +153,16 @@ function handleSignOut() {
     isRunning = false;
     saveStopwatchState();
   }
+  if (attendanceInterval) {
+    clearInterval(attendanceInterval);
+    attendanceInterval = null;
+  }
+  
+  var currentUser = localStorage.getItem("currentUser");
+  if (currentUser) {
+    localStorage.removeItem("active_tab_" + currentUser);
+  }
+  
   localStorage.removeItem("currentUser");
   showLoginScreen();
 }
