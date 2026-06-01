@@ -188,14 +188,14 @@
     </div>
 
     <!-- Clock Welcome Popup Overlay -->
-    <div id="greeting-overlay" class="overlay" hidden>
+    <div id="greeting-overlay" class="overlay overlay-hidden">
       <div class="modal">
-        <p class="modal-greeting">Welcome back,</p>
+        <p class="modal-greeting" id="greeting-text">Good Morning,</p>
         <h2 class="modal-name" id="greeting-name">User!</h2>
         <p class="modal-sub">You are signed in to <strong>HILIFE.AI</strong></p>
         <div class="modal-clock-box">
-          <p class="modal-time" id="greeting-time">00:00:00</p>
-          <p class="clock-status" id="clock-status">Clocked Out at None</p>
+          <p class="modal-time" id="greeting-time">--:--:--</p>
+          <p class="clock-status" id="clock-status">Checking status...</p>
         </div>
         <div class="modal-actions">
           <button

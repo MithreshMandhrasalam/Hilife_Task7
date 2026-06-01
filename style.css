@@ -257,6 +257,11 @@ body {
   z-index: 100;
 }
 
+/* Used to hide the overlay — separate class so display:flex isn't overridden by HTML hidden attribute */
+.overlay-hidden {
+  display: none;
+}
+
 .modal {
   background: #fff;
   border: 1px solid #ccc;
@@ -293,11 +298,12 @@ body {
 }
 
 .modal-time {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   font-family: monospace;
   color: #111;
   margin-bottom: 5px;
+  letter-spacing: 1px;
 }
 
 .clock-status {

@@ -44,10 +44,9 @@ window.onload = function () {
     document.getElementById("signin-remember").checked = true;
   }
 
-  // Auto-login if a session exists
+  // Auto-login: go straight to dashboard WITHOUT showing the greeting popup
   var currentUser = localStorage.getItem("currentUser");
   if (currentUser) {
-    // BUG FIX #2: use a fresh variable name, not re-declare 'users'
     var storedUsers = JSON.parse(localStorage.getItem("users") || "{}");
     if (storedUsers[currentUser]) {
       showDashboard(currentUser, storedUsers[currentUser].firstName + " " + storedUsers[currentUser].lastName);
@@ -76,7 +75,8 @@ window.onload = function () {
 function showLoginScreen() {
   document.getElementById("login-screen").classList.remove("hidden");
   document.getElementById("dashboard-screen").classList.add("hidden");
-  document.getElementById("greeting-overlay").hidden = true;
+  // Use class-based hide so display:flex in .overlay is not overridden by HTML hidden attr
+  document.getElementById("greeting-overlay").classList.add("overlay-hidden");
 
   // Stop the live-stats interval when leaving the dashboard
   if (attendanceInterval) {
@@ -207,21 +207,46 @@ function forgotPassword() {
   alert("Password reset link sent to: " + users[u].email);
 }
 
+// ── Time-based greeting ───────────────────────────────────────────────────────
+function getGreeting() {
+  var hour = new Date().getHours();
+  if (hour >= 5 && hour < 12)  return "Good Morning,";
+  if (hour >= 12 && hour < 17) return "Good Afternoon,";
+  if (hour >= 17 && hour < 21) return "Good Evening,";
+  return "Good Night,";
+}
+
 // ── Greeting overlay ──────────────────────────────────────────────────────────
 function showGreeting(username, name) {
+  // Set time-based greeting text
+  document.getElementById("greeting-text").textContent = getGreeting();
   document.getElementById("greeting-name").textContent = name;
+
+  // Show real system time (not a timer/stopwatch)
   var timeEl = document.getElementById("greeting-time");
+  function updateClock() {
+    var now  = new Date();
+    var hrs  = now.getHours();
+    var mins = now.getMinutes();
+    var secs = now.getSeconds();
+    var ampm = hrs >= 12 ? "PM" : "AM";
+    hrs = hrs % 12 || 12;
+    var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
+    timeEl.textContent = pad(hrs) + ":" + pad(mins) + ":" + pad(secs) + " " + ampm;
+    // Also update the greeting in case the clock ticks past midnight etc.
+    document.getElementById("greeting-text").textContent = getGreeting();
+  }
+  updateClock(); // set immediately so no flash of --:--:--
   if (clockTimer) clearInterval(clockTimer);
-  clockTimer = setInterval(function () {
-    timeEl.textContent = new Date().toLocaleTimeString("en-IN");
-  }, 1000);
-  timeEl.textContent = new Date().toLocaleTimeString("en-IN");
-  document.getElementById("greeting-overlay").hidden = false;
+  clockTimer = setInterval(updateClock, 1000);
+
+  // Show the overlay
+  document.getElementById("greeting-overlay").classList.remove("overlay-hidden");
   updateClockUI(username);
 }
 
 function closeGreeting() {
-  document.getElementById("greeting-overlay").hidden = true;
+  document.getElementById("greeting-overlay").classList.add("overlay-hidden");
   if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
   var currentUser = localStorage.getItem("currentUser");
   var users = JSON.parse(localStorage.getItem("users") || "{}");
