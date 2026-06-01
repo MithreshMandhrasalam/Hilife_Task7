@@ -14,6 +14,17 @@ var employees = [
 var clockTimer = null, timerId = null, isRunning = false, startTime = 0, accumulatedTime = 0, lapCounter = 0, laps = [];
 
 window.onload = function () {
+  var users = JSON.parse(localStorage.getItem("users") || "{}");
+  if (Object.keys(users).length === 0) {
+    users["hilife"] = {
+      firstName: "HiLife",
+      lastName: "User",
+      email: "user@hilife.ai",
+      password: "password123"
+    };
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+
   var rem = localStorage.getItem("rememberedUsername");
   if (rem) {
     document.getElementById("signin-username").value = rem;
