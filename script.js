@@ -59,6 +59,7 @@ function showDashboard(username, fullName) {
   document.getElementById("dashboard-screen").classList.remove("hidden");
   document.getElementById("user-greeting").textContent = "Hello, " + fullName;
   updateClockUI(username);
+  updateAttendanceStats(username);
   switchDashboardTab("directory");
 }
 
@@ -72,6 +73,7 @@ function switchLoginTab(tab) {
 
 function switchDashboardTab(tab) {
   var isDirectory = tab === "directory";
+  var currentUser = localStorage.getItem("currentUser") || "hilife";
   document.getElementById("tab-btn-directory").classList.toggle("active", isDirectory);
   document.getElementById("tab-btn-timer").classList.toggle("active", !isDirectory);
   document.getElementById("directory-tab").classList.toggle("active", isDirectory);
@@ -81,6 +83,7 @@ function switchDashboardTab(tab) {
     clearFilters();
   } else {
     loadStopwatchState();
+    updateAttendanceStats(currentUser);
   }
 }
 
