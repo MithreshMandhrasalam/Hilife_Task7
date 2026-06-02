@@ -12,9 +12,7 @@
     />
     <link rel="stylesheet" href="style.css" />
   </head>
-
   <body>
-    <!-- Login Screen -->
     <div id="login-screen" class="page">
       <div class="left-panel">
         <div class="left-content">
@@ -186,8 +184,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Clock Welcome Popup Overlay -->
     <div id="greeting-overlay" class="overlay overlay-hidden">
       <div class="modal">
         <p class="modal-greeting" id="greeting-text">Good Morning,</p>
@@ -214,8 +210,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Main Dashboard -->
     <div id="dashboard-screen" class="hidden">
       <header class="navbar">
         <div class="nav-container">
@@ -255,7 +249,6 @@
         </div>
       </header>
       <main class="dashboard-content">
-        <!-- Directory Tab -->
         <section id="directory-tab" class="tab-content-panel active">
           <div class="section-header-title">
             <h2>Employee Directory</h2>
@@ -345,16 +338,12 @@
             </div>
           </div>
         </section>
-
-        <!-- Attendance & Work Timer Tab -->
         <section id="timer-tab" class="tab-content-panel">
           <div class="section-header-title">
             <h2>Attendance & Work Timer</h2>
             <p>Track shift attendance status, check-in history, and daily session stopwatches</p>
           </div>
-          
           <div class="timer-grid">
-            <!-- Stopwatch -->
             <div class="stopwatch-card">
               <div class="card-header">
                 <h3>Work Session Stopwatch</h3>
@@ -373,13 +362,10 @@
                 <ul id="lapsList"></ul>
               </div>
             </div>
-
-            <!-- Attendance stats -->
             <div class="attendance-stats-card">
               <div class="card-header">
                 <h3>Today's Attendance Stats</h3>
               </div>
-              
               <div class="stats-row">
                 <div class="stat-widget">
                   <div class="stat-label">Shift Status</div>
@@ -398,8 +384,6 @@
                   <div class="stat-value highlight" id="stats-work-hours">00h 00m 00s</div>
                 </div>
               </div>
-
-              <!-- Daily Goal Progress -->
               <div class="goal-widget">
                 <div class="goal-header">
                   <span>Daily Target Progress</span>
@@ -409,8 +393,6 @@
                   <div class="progress-bar-fill" id="goal-progress-fill" style="width: 0%"></div>
                 </div>
               </div>
-
-              <!-- Attendance Logs -->
               <div class="logs-widget">
                 <div class="logs-header">
                   <span>Attendance History (Today)</span>
@@ -426,7 +408,6 @@
                       </tr>
                     </thead>
                     <tbody id="attendanceLogsBody">
-                      <!-- Rendered dynamically -->
                     </tbody>
                   </table>
                   <div id="noAttendanceLogs" class="no-logs">
